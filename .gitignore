@@ -1,0 +1,11 @@
+node_modules/
+.kilo/
+dist/
+tmp/
+uploads/
+*.log
+.env
+.env.*
+!.env.example
+babui_db_backup.sql
+cpanel_database.sql
