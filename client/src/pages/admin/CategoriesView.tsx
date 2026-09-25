@@ -36,6 +36,7 @@ export default function CategoriesView() {
 
   const { data: categories = [], refetch, isLoading } = trpc.admin.categories.list.useQuery();
   const { data: products = [] } = trpc.admin.products.list.useQuery();
+  const utils = trpc.useUtils();
 
   const saveMutation = trpc.admin.categories.save.useMutation();
   const deleteMutation = trpc.admin.categories.delete.useMutation();
@@ -97,6 +98,11 @@ export default function CategoriesView() {
       toast.success(editingId ? "Category updated!" : "Category created!");
       setIsModalOpen(false);
       refetch();
+      utils.categories.invalidate();
+      utils.admin.categories.invalidate();
+      utils.products.invalidate();
+      utils.admin.products.invalidate();
+      utils.storefront.invalidate();
     } catch (err: any) {
       toast.error(err.message || "Failed to save category");
     }
@@ -108,6 +114,11 @@ export default function CategoriesView() {
       await deleteMutation.mutateAsync({ id });
       toast.success("Category deleted");
       refetch();
+      utils.categories.invalidate();
+      utils.admin.categories.invalidate();
+      utils.products.invalidate();
+      utils.admin.products.invalidate();
+      utils.storefront.invalidate();
     } catch (err: any) {
       toast.error("Error deleting category");
     }

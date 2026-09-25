@@ -94,7 +94,7 @@ export function AdminAuthProvider({ children }: { children: React.ReactNode }) {
           const fallbackUser: AdminUser = {
             id: 1,
             name: "Super Administrator",
-            email: cleanEmail || "admin@ghorerbazar.com",
+            email: cleanEmail || "admin@babuishop.com",
             role: "super_admin",
             permissions: ["all"],
             isActive: true,
@@ -150,7 +150,7 @@ export function AdminAuthProvider({ children }: { children: React.ReactNode }) {
       const fallbackUser: AdminUser = {
         id: role === "super_admin" ? 1 : 2,
         name: roleTitles[role] || "Administrator",
-        email: `${role}@ghorerbazar.com`,
+        email: `${role}@babuishop.com`,
         role,
         permissions: role === "super_admin" ? ["all"] : ["products.view", "orders.view", "dashboard.view"],
         isActive: true,

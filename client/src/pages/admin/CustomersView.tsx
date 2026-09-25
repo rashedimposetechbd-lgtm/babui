@@ -1,5 +1,6 @@
 import React, { useState } from "react";
 import AdminLayout from "@/components/admin/AdminLayout";
+import { useAdminAuth } from "@/contexts/AdminAuthContext";
 import { trpc } from "@/lib/trpc";
 import {
   Users,
@@ -14,13 +15,28 @@ import {
   X,
   FileText,
   DollarSign,
+  Pencil,
+  Trash2,
+  Lock,
 } from "lucide-react";
 import { toast } from "sonner";
 
 export default function CustomersView() {
+  const { admin } = useAdminAuth();
+  const isSuperAdmin = admin?.role === "super_admin";
+  const utils = trpc.useUtils();
   const [search, setSearch] = useState("");
   const [selectedStatus, setSelectedStatus] = useState<string>("all");
   const [activeCustomer, setActiveCustomer] = useState<any | null>(null);
+
+  // Edit Customer Modal State
+  const [editingCustomer, setEditingCustomer] = useState<any | null>(null);
+  const [editCustName, setEditCustName] = useState("");
+  const [editCustPhone, setEditCustPhone] = useState("");
+  const [editCustEmail, setEditCustEmail] = useState("");
+  const [editCustAddress, setEditCustAddress] = useState("");
+  const [editCustStatus, setEditCustStatus] = useState<"active" | "disabled">("active");
+  const [editCustNotes, setEditCustNotes] = useState("");
 
   const { data: rawCustomers = [], refetch, isLoading } = trpc.admin.customers.list.useQuery({
     search: search || undefined,
@@ -31,7 +47,76 @@ export default function CustomersView() {
   );
 
   const { data: orders = [] } = trpc.admin.orders.list.useQuery();
-  const updateStatusMutation = trpc.admin.customers.update.useMutation();
+  const updateCustomerMutation = trpc.admin.customers.update.useMutation();
+  const deleteCustomerMutation = trpc.admin.customers.delete.useMutation();
+
+  const openEditCustomer = (cust: any) => {
+    setEditingCustomer(cust);
+    setEditCustName(cust.name || "");
+    setEditCustPhone(cust.phone || "");
+    setEditCustEmail(cust.email || "");
+    setEditCustAddress(cust.address || "");
+    setEditCustStatus(cust.status === "disabled" ? "disabled" : "active");
+    setEditCustNotes(cust.notes || "");
+  };
+
+  const handleSaveCustomer = async (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!editingCustomer) return;
+    try {
+      const updated = await updateCustomerMutation.mutateAsync({
+        id: editingCustomer.id,
+        name: editCustName.trim(),
+        phone: editCustPhone.trim(),
+        email: editCustEmail.trim() || undefined,
+        address: editCustAddress.trim(),
+        status: editCustStatus,
+        notes: editCustNotes.trim() || undefined,
+      });
+      toast.success(`Customer "${editCustName}" updated successfully!`);
+      setEditingCustomer(null);
+      if (activeCustomer && activeCustomer.id === editingCustomer.id) {
+        setActiveCustomer({
+          ...activeCustomer,
+          ...updated,
+        });
+      }
+      refetch();
+      utils.admin.customers.invalidate();
+      utils.admin.dashboard.invalidate();
+    } catch (err: any) {
+      toast.error(err.message || "Failed to update customer");
+    }
+  };
+
+  const handleDeleteCustomer = async (id: number, name: string) => {
+    if (!isSuperAdmin) {
+      toast.error("Permission denied: Only Super Admin can delete customers.");
+      return;
+    }
+    if (
+      !confirm(
+        `Are you sure you want to permanently delete customer "${name}"? This action cannot be undone.`
+      )
+    ) {
+      return;
+    }
+    try {
+      await deleteCustomerMutation.mutateAsync({ id, adminRole: admin?.role });
+      toast.success(`Customer "${name}" deleted successfully!`);
+      if (activeCustomer?.id === id) {
+        setActiveCustomer(null);
+      }
+      if (editingCustomer?.id === id) {
+        setEditingCustomer(null);
+      }
+      refetch();
+      utils.admin.customers.invalidate();
+      utils.admin.dashboard.invalidate();
+    } catch (err: any) {
+      toast.error("Failed to delete customer");
+    }
+  };
 
   const handleToggleBlock = async (customer: any) => {
     const newStatus = customer.status === "disabled" ? "active" : "disabled";
@@ -45,7 +130,7 @@ export default function CustomersView() {
       return;
 
     try {
-      await updateStatusMutation.mutateAsync({
+      await updateCustomerMutation.mutateAsync({
         id: customer.id,
         status: newStatus,
       });
@@ -54,6 +139,8 @@ export default function CustomersView() {
         setActiveCustomer({ ...activeCustomer, status: newStatus });
       }
       refetch();
+      utils.admin.customers.invalidate();
+      utils.admin.dashboard.invalidate();
     } catch (err) {
       toast.error("Failed to update customer status");
     }
@@ -186,11 +273,36 @@ export default function CustomersView() {
                       <div className="flex items-center justify-end gap-1">
                         <button
                           onClick={() => setActiveCustomer(cust)}
+                          title="View Details"
                           className="px-2.5 py-1.5 rounded-lg bg-slate-100 dark:bg-slate-800 hover:bg-slate-200 text-slate-700 dark:text-slate-200 text-xs font-medium flex items-center gap-1 transition-colors"
                         >
                           <Eye size={13} />
                           <span>View</span>
                         </button>
+                        <button
+                          onClick={() => openEditCustomer(cust)}
+                          title="Edit Customer"
+                          className="p-1.5 rounded-lg bg-blue-50 dark:bg-blue-950/50 hover:bg-blue-100 text-blue-700 dark:text-blue-300 text-xs font-medium transition-colors"
+                        >
+                          <Pencil size={13} />
+                        </button>
+                        {isSuperAdmin ? (
+                          <button
+                            onClick={() => handleDeleteCustomer(cust.id, cust.name)}
+                            title="Delete Customer (Super Admin)"
+                            className="p-1.5 rounded-lg bg-slate-100 dark:bg-slate-800 hover:bg-rose-100 hover:text-rose-600 text-slate-400 dark:text-slate-400 text-xs font-medium transition-colors"
+                          >
+                            <Trash2 size={13} />
+                          </button>
+                        ) : (
+                          <button
+                            disabled
+                            title="Customer delete is restricted to Super Admin only"
+                            className="p-1.5 rounded-lg bg-slate-100 dark:bg-slate-800/50 text-slate-300 dark:text-slate-600 text-xs font-medium cursor-not-allowed opacity-50"
+                          >
+                            <Lock size={12} />
+                          </button>
+                        )}
                         <button
                           onClick={() => handleToggleBlock(cust)}
                           className={`p-1.5 rounded-lg transition-colors ${
@@ -282,24 +394,193 @@ export default function CustomersView() {
                       {activeCustomer.division}
                     </span>
                   </p>
+                  {activeCustomer.notes && (
+                    <p className="pt-2 text-slate-500 border-t border-slate-200 dark:border-slate-700">
+                      <strong>Notes:</strong> {activeCustomer.notes}
+                    </p>
+                  )}
                 </div>
               </div>
 
               {/* Actions */}
-              <div className="pt-4 border-t flex justify-end gap-2">
-                <button
-                  type="button"
-                  onClick={() => handleToggleBlock(activeCustomer)}
-                  className={`px-4 py-2 rounded-xl font-semibold ${
-                    activeCustomer.status === "blocked"
-                      ? "bg-emerald-600 text-white hover:bg-emerald-500"
-                      : "bg-rose-50 text-rose-600 hover:bg-rose-100"
-                  }`}
-                >
-                  {activeCustomer.status === "blocked" ? "Unblock Account" : "Block Customer"}
-                </button>
+              <div className="pt-4 border-t border-slate-200 dark:border-slate-800 flex items-center justify-between">
+                {isSuperAdmin ? (
+                  <button
+                    type="button"
+                    onClick={() => handleDeleteCustomer(activeCustomer.id, activeCustomer.name)}
+                    className="px-4 py-2 bg-rose-50 text-rose-600 dark:bg-rose-950 dark:text-rose-400 hover:bg-rose-100 rounded-xl text-xs font-semibold flex items-center gap-1.5 transition-colors"
+                  >
+                    <Trash2 size={14} />
+                    <span>Delete Profile</span>
+                  </button>
+                ) : (
+                  <div className="flex items-center gap-1.5 text-xs text-slate-400 dark:text-slate-500">
+                    <Lock size={12} />
+                    <span>Delete is Super Admin only</span>
+                  </div>
+                )}
+
+                <div className="flex items-center gap-2">
+                  <button
+                    type="button"
+                    onClick={() => openEditCustomer(activeCustomer)}
+                    className="px-4 py-2 bg-blue-50 text-blue-700 dark:bg-blue-950 dark:text-blue-300 hover:bg-blue-100 rounded-xl text-xs font-semibold flex items-center gap-1.5 transition-colors"
+                  >
+                    <Pencil size={14} />
+                    <span>Edit Profile</span>
+                  </button>
+
+                  <button
+                    type="button"
+                    onClick={() => handleToggleBlock(activeCustomer)}
+                    className={`px-4 py-2 rounded-xl font-semibold text-xs transition-colors ${
+                      activeCustomer.status === "disabled"
+                        ? "bg-emerald-600 text-white hover:bg-emerald-500"
+                        : "bg-amber-50 text-amber-700 dark:bg-amber-950 dark:text-amber-300 hover:bg-amber-100"
+                    }`}
+                  >
+                    {activeCustomer.status === "disabled" ? "Activate Customer" : "Disable Customer"}
+                  </button>
+                </div>
               </div>
             </div>
+          </div>
+        </div>
+      )}
+
+      {/* EDIT CUSTOMER MODAL */}
+      {editingCustomer && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-900/60 backdrop-blur-xs overflow-y-auto">
+          <div className="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-2xl shadow-2xl w-full max-w-lg my-8 overflow-hidden flex flex-col">
+            <div className="px-6 py-4 border-b border-slate-200 dark:border-slate-800 flex items-center justify-between">
+              <h3 className="text-base font-bold text-slate-900 dark:text-white flex items-center gap-2">
+                <Pencil size={16} className="text-blue-600" />
+                <span>Edit Customer: {editingCustomer.name}</span>
+              </h3>
+              <button
+                onClick={() => setEditingCustomer(null)}
+                className="p-1.5 text-slate-400 hover:text-slate-600 dark:hover:text-slate-200 rounded-lg"
+              >
+                <X size={18} />
+              </button>
+            </div>
+
+            <form onSubmit={handleSaveCustomer} className="p-6 space-y-4 text-xs">
+              <div>
+                <label className="block text-[11px] font-semibold text-slate-700 dark:text-slate-300 mb-1">
+                  Customer Full Name *
+                </label>
+                <input
+                  type="text"
+                  required
+                  value={editCustName}
+                  onChange={(e) => setEditCustName(e.target.value)}
+                  className="w-full px-3 py-2 rounded-xl bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 text-slate-900 dark:text-white focus:outline-none focus:border-emerald-500"
+                />
+              </div>
+
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                <div>
+                  <label className="block text-[11px] font-semibold text-slate-700 dark:text-slate-300 mb-1">
+                    Phone Number *
+                  </label>
+                  <input
+                    type="text"
+                    required
+                    value={editCustPhone}
+                    onChange={(e) => setEditCustPhone(e.target.value)}
+                    className="w-full px-3 py-2 rounded-xl bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 text-slate-900 dark:text-white focus:outline-none focus:border-emerald-500"
+                  />
+                </div>
+
+                <div>
+                  <label className="block text-[11px] font-semibold text-slate-700 dark:text-slate-300 mb-1">
+                    Account Status
+                  </label>
+                  <select
+                    value={editCustStatus}
+                    onChange={(e) => setEditCustStatus(e.target.value as "active" | "disabled")}
+                    className="w-full px-3 py-2 rounded-xl bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 text-slate-900 dark:text-white focus:outline-none focus:border-emerald-500"
+                  >
+                    <option value="active">Active</option>
+                    <option value="disabled">Disabled / Blocked</option>
+                  </select>
+                </div>
+              </div>
+
+              <div>
+                <label className="block text-[11px] font-semibold text-slate-700 dark:text-slate-300 mb-1">
+                  Email Address
+                </label>
+                <input
+                  type="email"
+                  value={editCustEmail}
+                  onChange={(e) => setEditCustEmail(e.target.value)}
+                  placeholder="customer@example.com"
+                  className="w-full px-3 py-2 rounded-xl bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 text-slate-900 dark:text-white focus:outline-none focus:border-emerald-500"
+                />
+              </div>
+
+              <div>
+                <label className="block text-[11px] font-semibold text-slate-700 dark:text-slate-300 mb-1">
+                  Delivery Address
+                </label>
+                <textarea
+                  rows={2}
+                  value={editCustAddress}
+                  onChange={(e) => setEditCustAddress(e.target.value)}
+                  className="w-full px-3 py-2 rounded-xl bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 text-slate-900 dark:text-white focus:outline-none focus:border-emerald-500 resize-none"
+                />
+              </div>
+
+              <div>
+                <label className="block text-[11px] font-semibold text-slate-700 dark:text-slate-300 mb-1">
+                  Admin Internal Notes
+                </label>
+                <textarea
+                  rows={2}
+                  value={editCustNotes}
+                  onChange={(e) => setEditCustNotes(e.target.value)}
+                  placeholder="e.g. VIP customer, calls before ordering..."
+                  className="w-full px-3 py-2 rounded-xl bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 text-slate-900 dark:text-white focus:outline-none focus:border-emerald-500 resize-none"
+                />
+              </div>
+
+              <div className="flex items-center justify-between pt-3 border-t border-slate-200 dark:border-slate-800">
+                {isSuperAdmin ? (
+                  <button
+                    type="button"
+                    onClick={() => handleDeleteCustomer(editingCustomer.id, editingCustomer.name)}
+                    className="px-4 py-2 bg-rose-50 text-rose-600 dark:bg-rose-950 dark:text-rose-400 hover:bg-rose-100 rounded-xl text-xs font-semibold flex items-center gap-1.5 transition-colors"
+                  >
+                    <Trash2 size={14} />
+                    <span>Delete</span>
+                  </button>
+                ) : (
+                  <div className="flex items-center gap-1.5 text-xs text-slate-400 dark:text-slate-500">
+                    <Lock size={12} />
+                    <span>Delete is Super Admin only</span>
+                  </div>
+                )}
+
+                <div className="flex items-center gap-2">
+                  <button
+                    type="button"
+                    onClick={() => setEditingCustomer(null)}
+                    className="px-4 py-2 rounded-xl border border-slate-200 dark:border-slate-700 hover:bg-slate-100 dark:hover:bg-slate-800 text-slate-700 dark:text-slate-300 text-xs font-semibold"
+                  >
+                    Cancel
+                  </button>
+                  <button
+                    type="submit"
+                    disabled={updateCustomerMutation.isPending}
+                    className="px-5 py-2 bg-emerald-600 hover:bg-emerald-500 text-white rounded-xl text-xs font-semibold shadow-xs disabled:opacity-50"
+                  >
+                    Save Changes
+                  </button>
+                </div>
+              </div>
+            </form>
           </div>
         </div>
       )}

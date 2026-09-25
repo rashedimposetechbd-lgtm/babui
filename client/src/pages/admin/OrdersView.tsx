@@ -1,5 +1,6 @@
 import React, { useState, useRef } from "react";
 import AdminLayout from "@/components/admin/AdminLayout";
+import { useAdminAuth } from "@/contexts/AdminAuthContext";
 import { trpc } from "@/lib/trpc";
 import {
   ShoppingBag,
@@ -19,10 +20,16 @@ import {
   MapPin,
   X,
   Send,
+  Pencil,
+  Trash2,
+  Lock,
 } from "lucide-react";
 import { toast } from "sonner";
 
 export default function OrdersView() {
+  const { admin } = useAdminAuth();
+  const isSuperAdmin = admin?.role === "super_admin";
+  const utils = trpc.useUtils();
   const [search, setSearch] = useState("");
   const [selectedStatus, setSelectedStatus] = useState<string>(() => {
     if (typeof window !== "undefined") {
@@ -41,6 +48,23 @@ export default function OrdersView() {
   const [newPaymentStatus, setNewPaymentStatus] = useState<any>("pending");
   const [adminNotes, setAdminNotes] = useState("");
 
+  // Edit Order Modal State
+  const [editingOrder, setEditingOrder] = useState<any | null>(null);
+  const [editCustomerName, setEditCustomerName] = useState("");
+  const [editCustomerPhone, setEditCustomerPhone] = useState("");
+  const [editCustomerEmail, setEditCustomerEmail] = useState("");
+  const [editShippingAddress, setEditShippingAddress] = useState("");
+  const [editDivision, setEditDivision] = useState("Dhaka");
+  const [editDistrict, setEditDistrict] = useState("Dhaka");
+  const [editUpazila, setEditUpazila] = useState("");
+  const [editOrderStatus, setEditOrderStatus] = useState<any>("pending");
+  const [editPaymentStatus, setEditPaymentStatus] = useState<any>("pending");
+  const [editPaymentMethod, setEditPaymentMethod] = useState<any>("cod");
+  const [editShippingFee, setEditShippingFee] = useState<number>(0);
+  const [editDiscount, setEditDiscount] = useState<number>(0);
+  const [editTotal, setEditTotal] = useState<number>(0);
+  const [editNotes, setEditNotes] = useState("");
+
   const { data: orders = [], refetch, isLoading } = trpc.admin.orders.list.useQuery({
     search: search || undefined,
     status: selectedStatus,
@@ -50,12 +74,113 @@ export default function OrdersView() {
   const { data: settings } = trpc.admin.settings.get.useQuery();
 
   const updateStatusMutation = trpc.admin.orders.updateStatus.useMutation();
+  const updateOrderMutation = trpc.admin.orders.update.useMutation();
+  const deleteOrderMutation = trpc.admin.orders.delete.useMutation();
 
   const openOrderDetails = (order: any) => {
     setActiveOrder(order);
     setNewStatus(order.orderStatus);
     setNewPaymentStatus(order.paymentStatus);
     setAdminNotes(order.notes || "");
+  };
+
+  const openEditOrder = (order: any) => {
+    setEditingOrder(order);
+    setEditCustomerName(order.customerName || "");
+    setEditCustomerPhone(order.customerPhone || "");
+    setEditCustomerEmail(order.customerEmail || "");
+    setEditShippingAddress(order.shippingAddress || "");
+    setEditDivision(order.division || "Dhaka");
+    setEditDistrict(order.district || "Dhaka");
+    setEditUpazila(order.upazila || "");
+    setEditOrderStatus(order.orderStatus || "pending");
+    setEditPaymentStatus(order.paymentStatus || "pending");
+    setEditPaymentMethod(order.paymentMethod || "cod");
+    setEditShippingFee(order.shippingFee ?? 0);
+    setEditDiscount(order.discount ?? 0);
+    setEditTotal(order.total ?? 0);
+    setEditNotes(order.notes || "");
+  };
+
+  const handleSaveEditOrder = async (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!editingOrder) return;
+    try {
+      await updateOrderMutation.mutateAsync({
+        id: editingOrder.id,
+        customerName: editCustomerName.trim(),
+        customerPhone: editCustomerPhone.trim(),
+        customerEmail: editCustomerEmail.trim() || undefined,
+        shippingAddress: editShippingAddress.trim(),
+        division: editDivision,
+        district: editDistrict,
+        upazila: editUpazila.trim() || undefined,
+        orderStatus: editOrderStatus,
+        paymentStatus: editPaymentStatus,
+        paymentMethod: editPaymentMethod,
+        shippingFee: Number(editShippingFee) || 0,
+        discount: Number(editDiscount) || 0,
+        total: Number(editTotal) || 0,
+        notes: editNotes.trim(),
+      });
+      toast.success(`Order ${editingOrder.orderNumber} updated successfully!`);
+      setEditingOrder(null);
+      if (activeOrder && activeOrder.id === editingOrder.id) {
+        setActiveOrder({
+          ...activeOrder,
+          customerName: editCustomerName.trim(),
+          customerPhone: editCustomerPhone.trim(),
+          customerEmail: editCustomerEmail.trim(),
+          shippingAddress: editShippingAddress.trim(),
+          division: editDivision,
+          district: editDistrict,
+          upazila: editUpazila.trim(),
+          orderStatus: editOrderStatus,
+          paymentStatus: editPaymentStatus,
+          paymentMethod: editPaymentMethod,
+          shippingFee: Number(editShippingFee) || 0,
+          discount: Number(editDiscount) || 0,
+          total: Number(editTotal) || 0,
+          notes: editNotes.trim(),
+        });
+      }
+      refetch();
+      utils.admin.orders.invalidate();
+      utils.admin.dashboard.invalidate();
+      utils.admin.customers.invalidate();
+    } catch (err: any) {
+      toast.error(err.message || "Failed to update order");
+    }
+  };
+
+  const handleDeleteOrder = async (orderId: number, orderNumber: string) => {
+    if (!isSuperAdmin) {
+      toast.error("Permission denied: Only Super Admin can delete orders.");
+      return;
+    }
+    if (
+      !confirm(
+        `Are you sure you want to delete order ${orderNumber}? This will permanently remove it from the system.`
+      )
+    ) {
+      return;
+    }
+    try {
+      await deleteOrderMutation.mutateAsync({ id: orderId, adminRole: admin?.role });
+      toast.success(`Order ${orderNumber} deleted successfully!`);
+      if (activeOrder?.id === orderId) {
+        setActiveOrder(null);
+      }
+      if (editingOrder?.id === orderId) {
+        setEditingOrder(null);
+      }
+      refetch();
+      utils.admin.orders.invalidate();
+      utils.admin.dashboard.invalidate();
+      utils.admin.customers.invalidate();
+    } catch (err: any) {
+      toast.error("Failed to delete order");
+    }
   };
 
   const handleUpdateStatus = async () => {
@@ -70,6 +195,8 @@ export default function OrdersView() {
       setActiveOrder(updated);
       toast.success("Order status updated!");
       refetch();
+      utils.admin.orders.invalidate();
+      utils.admin.dashboard.invalidate();
     } catch (err: any) {
       toast.error("Failed to update status");
     }
@@ -284,11 +411,36 @@ export default function OrdersView() {
                       <div className="flex items-center justify-end gap-1">
                         <button
                           onClick={() => openOrderDetails(order)}
+                          title="Inspect Order"
                           className="px-2.5 py-1.5 rounded-lg bg-slate-100 dark:bg-slate-800 hover:bg-slate-200 text-slate-700 dark:text-slate-200 text-xs font-medium flex items-center gap-1 transition-colors"
                         >
                           <Eye size={13} />
                           <span>Inspect</span>
                         </button>
+                        <button
+                          onClick={() => openEditOrder(order)}
+                          title="Edit Order"
+                          className="p-1.5 rounded-lg bg-blue-50 dark:bg-blue-950/50 hover:bg-blue-100 text-blue-700 dark:text-blue-300 text-xs font-medium transition-colors"
+                        >
+                          <Pencil size={13} />
+                        </button>
+                        {isSuperAdmin ? (
+                          <button
+                            onClick={() => handleDeleteOrder(order.id, order.orderNumber)}
+                            title="Delete Order (Super Admin)"
+                            className="p-1.5 rounded-lg bg-slate-100 dark:bg-slate-800 hover:bg-rose-100 hover:text-rose-600 text-slate-400 dark:text-slate-400 text-xs font-medium transition-colors"
+                          >
+                            <Trash2 size={13} />
+                          </button>
+                        ) : (
+                          <button
+                            disabled
+                            title="Order delete is restricted to Super Admin only"
+                            className="p-1.5 rounded-lg bg-slate-100 dark:bg-slate-800/50 text-slate-300 dark:text-slate-600 text-xs font-medium cursor-not-allowed opacity-50"
+                          >
+                            <Lock size={12} />
+                          </button>
+                        )}
                       </div>
                     </td>
                   </tr>
@@ -316,6 +468,22 @@ export default function OrdersView() {
                 </p>
               </div>
               <div className="flex items-center gap-2">
+                <button
+                  onClick={() => openEditOrder(activeOrder)}
+                  className="px-3 py-1.5 bg-blue-50 text-blue-700 dark:bg-blue-950 dark:text-blue-400 rounded-xl text-xs font-semibold flex items-center gap-1.5 hover:bg-blue-100 transition-colors"
+                >
+                  <Pencil size={13} />
+                  <span>Edit</span>
+                </button>
+                {isSuperAdmin && (
+                  <button
+                    onClick={() => handleDeleteOrder(activeOrder.id, activeOrder.orderNumber)}
+                    className="px-3 py-1.5 bg-rose-50 text-rose-700 dark:bg-rose-950 dark:text-rose-400 rounded-xl text-xs font-semibold flex items-center gap-1.5 hover:bg-rose-100 transition-colors"
+                  >
+                    <Trash2 size={13} />
+                    <span>Delete</span>
+                  </button>
+                )}
                 <button
                   onClick={() => setIsInvoiceOpen(true)}
                   className="px-3 py-1.5 bg-emerald-50 text-emerald-700 dark:bg-emerald-950 dark:text-emerald-400 rounded-xl text-xs font-semibold flex items-center gap-1.5 hover:bg-emerald-100"
@@ -665,6 +833,293 @@ export default function OrdersView() {
                 )}
               </div>
             </div>
+          </div>
+        </div>
+      )}
+
+      {/* EDIT ORDER MODAL */}
+      {editingOrder && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-900/60 backdrop-blur-xs overflow-y-auto">
+          <div className="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-2xl shadow-2xl w-full max-w-2xl my-8 overflow-hidden flex flex-col max-h-[90vh]">
+            <div className="px-6 py-4 border-b border-slate-200 dark:border-slate-800 flex items-center justify-between">
+              <div>
+                <h3 className="text-base font-bold text-slate-900 dark:text-white flex items-center gap-2">
+                  <Pencil size={16} className="text-blue-600" />
+                  <span>Edit Order: {editingOrder.orderNumber}</span>
+                </h3>
+                <p className="text-xs text-slate-400">
+                  Update customer shipping details, order status, totals, and courier notes.
+                </p>
+              </div>
+              <button
+                onClick={() => setEditingOrder(null)}
+                className="p-1.5 text-slate-400 hover:text-slate-600 dark:hover:text-slate-200 rounded-lg"
+              >
+                <X size={18} />
+              </button>
+            </div>
+
+            <form onSubmit={handleSaveEditOrder} className="flex-1 overflow-y-auto p-6 space-y-5">
+              {/* Customer Information */}
+              <div>
+                <h4 className="text-xs font-bold uppercase tracking-wider text-slate-400 mb-3">
+                  Customer &amp; Recipient
+                </h4>
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                  <div>
+                    <label className="block text-[11px] font-semibold text-slate-700 dark:text-slate-300 mb-1">
+                      Customer Full Name *
+                    </label>
+                    <input
+                      type="text"
+                      required
+                      value={editCustomerName}
+                      onChange={(e) => setEditCustomerName(e.target.value)}
+                      className="w-full px-3 py-2 text-xs rounded-xl bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 text-slate-900 dark:text-white focus:outline-none focus:border-emerald-500"
+                    />
+                  </div>
+                  <div>
+                    <label className="block text-[11px] font-semibold text-slate-700 dark:text-slate-300 mb-1">
+                      Phone Number *
+                    </label>
+                    <input
+                      type="text"
+                      required
+                      value={editCustomerPhone}
+                      onChange={(e) => setEditCustomerPhone(e.target.value)}
+                      className="w-full px-3 py-2 text-xs rounded-xl bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 text-slate-900 dark:text-white focus:outline-none focus:border-emerald-500"
+                    />
+                  </div>
+                  <div className="sm:col-span-2">
+                    <label className="block text-[11px] font-semibold text-slate-700 dark:text-slate-300 mb-1">
+                      Email Address
+                    </label>
+                    <input
+                      type="email"
+                      value={editCustomerEmail}
+                      onChange={(e) => setEditCustomerEmail(e.target.value)}
+                      placeholder="customer@example.com"
+                      className="w-full px-3 py-2 text-xs rounded-xl bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 text-slate-900 dark:text-white focus:outline-none focus:border-emerald-500"
+                    />
+                  </div>
+                </div>
+              </div>
+
+              {/* Delivery Address */}
+              <div>
+                <h4 className="text-xs font-bold uppercase tracking-wider text-slate-400 mb-3">
+                  Delivery Address
+                </h4>
+                <div className="space-y-3">
+                  <div>
+                    <label className="block text-[11px] font-semibold text-slate-700 dark:text-slate-300 mb-1">
+                      Detailed Street Address *
+                    </label>
+                    <textarea
+                      required
+                      rows={2}
+                      value={editShippingAddress}
+                      onChange={(e) => setEditShippingAddress(e.target.value)}
+                      className="w-full px-3 py-2 text-xs rounded-xl bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 text-slate-900 dark:text-white focus:outline-none focus:border-emerald-500 resize-none"
+                    />
+                  </div>
+                  <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
+                    <div>
+                      <label className="block text-[11px] font-semibold text-slate-700 dark:text-slate-300 mb-1">
+                        Division
+                      </label>
+                      <input
+                        type="text"
+                        value={editDivision}
+                        onChange={(e) => setEditDivision(e.target.value)}
+                        className="w-full px-3 py-2 text-xs rounded-xl bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 text-slate-900 dark:text-white focus:outline-none focus:border-emerald-500"
+                      />
+                    </div>
+                    <div>
+                      <label className="block text-[11px] font-semibold text-slate-700 dark:text-slate-300 mb-1">
+                        District / City
+                      </label>
+                      <input
+                        type="text"
+                        value={editDistrict}
+                        onChange={(e) => setEditDistrict(e.target.value)}
+                        className="w-full px-3 py-2 text-xs rounded-xl bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 text-slate-900 dark:text-white focus:outline-none focus:border-emerald-500"
+                      />
+                    </div>
+                    <div>
+                      <label className="block text-[11px] font-semibold text-slate-700 dark:text-slate-300 mb-1">
+                        Thana / Upazila
+                      </label>
+                      <input
+                        type="text"
+                        value={editUpazila}
+                        onChange={(e) => setEditUpazila(e.target.value)}
+                        className="w-full px-3 py-2 text-xs rounded-xl bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 text-slate-900 dark:text-white focus:outline-none focus:border-emerald-500"
+                      />
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+              {/* Statuses & Payment */}
+              <div>
+                <h4 className="text-xs font-bold uppercase tracking-wider text-slate-400 mb-3">
+                  Status &amp; Payment
+                </h4>
+                <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
+                  <div>
+                    <label className="block text-[11px] font-semibold text-slate-700 dark:text-slate-300 mb-1">
+                      Order Status
+                    </label>
+                    <select
+                      value={editOrderStatus}
+                      onChange={(e) => setEditOrderStatus(e.target.value)}
+                      className="w-full px-3 py-2 text-xs rounded-xl bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 text-slate-900 dark:text-white focus:outline-none focus:border-emerald-500"
+                    >
+                      <option value="pending">Pending</option>
+                      <option value="confirmed">Confirmed</option>
+                      <option value="processing">Processing</option>
+                      <option value="packed">Packed</option>
+                      <option value="shipped">Shipped</option>
+                      <option value="out_for_delivery">Out for Delivery</option>
+                      <option value="delivered">Delivered</option>
+                      <option value="cancelled">Cancelled</option>
+                      <option value="returned">Returned</option>
+                      <option value="refunded">Refunded</option>
+                    </select>
+                  </div>
+
+                  <div>
+                    <label className="block text-[11px] font-semibold text-slate-700 dark:text-slate-300 mb-1">
+                      Payment Status
+                    </label>
+                    <select
+                      value={editPaymentStatus}
+                      onChange={(e) => setEditPaymentStatus(e.target.value)}
+                      className="w-full px-3 py-2 text-xs rounded-xl bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 text-slate-900 dark:text-white focus:outline-none focus:border-emerald-500"
+                    >
+                      <option value="pending">Pending</option>
+                      <option value="paid">Paid</option>
+                      <option value="failed">Failed</option>
+                      <option value="refunded">Refunded</option>
+                    </select>
+                  </div>
+
+                  <div>
+                    <label className="block text-[11px] font-semibold text-slate-700 dark:text-slate-300 mb-1">
+                      Payment Method
+                    </label>
+                    <select
+                      value={editPaymentMethod}
+                      onChange={(e) => setEditPaymentMethod(e.target.value)}
+                      className="w-full px-3 py-2 text-xs rounded-xl bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 text-slate-900 dark:text-white focus:outline-none focus:border-emerald-500 uppercase"
+                    >
+                      <option value="cod">Cash on Delivery (COD)</option>
+                      <option value="bkash">bKash</option>
+                      <option value="nagad">Nagad</option>
+                      <option value="sslcommerz">SSLCommerz</option>
+                      <option value="card">Debit/Credit Card</option>
+                    </select>
+                  </div>
+                </div>
+              </div>
+
+              {/* Pricing & Fees */}
+              <div>
+                <h4 className="text-xs font-bold uppercase tracking-wider text-slate-400 mb-3">
+                  Pricing, Discount &amp; Total (৳)
+                </h4>
+                <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
+                  <div>
+                    <label className="block text-[11px] font-semibold text-slate-700 dark:text-slate-300 mb-1">
+                      Delivery Charge (৳)
+                    </label>
+                    <input
+                      type="number"
+                      min={0}
+                      value={editShippingFee}
+                      onChange={(e) => setEditShippingFee(Number(e.target.value))}
+                      className="w-full px-3 py-2 text-xs rounded-xl bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 text-slate-900 dark:text-white focus:outline-none focus:border-emerald-500"
+                    />
+                  </div>
+                  <div>
+                    <label className="block text-[11px] font-semibold text-slate-700 dark:text-slate-300 mb-1">
+                      Discount (৳)
+                    </label>
+                    <input
+                      type="number"
+                      min={0}
+                      value={editDiscount}
+                      onChange={(e) => setEditDiscount(Number(e.target.value))}
+                      className="w-full px-3 py-2 text-xs rounded-xl bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 text-slate-900 dark:text-white focus:outline-none focus:border-emerald-500"
+                    />
+                  </div>
+                  <div>
+                    <label className="block text-[11px] font-semibold text-slate-700 dark:text-slate-300 mb-1">
+                      Total Payable (৳) *
+                    </label>
+                    <input
+                      type="number"
+                      min={0}
+                      required
+                      value={editTotal}
+                      onChange={(e) => setEditTotal(Number(e.target.value))}
+                      className="w-full px-3 py-2 text-xs rounded-xl bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 text-slate-900 dark:text-white focus:outline-none focus:border-emerald-500 font-bold"
+                    />
+                  </div>
+                </div>
+              </div>
+
+              {/* Notes */}
+              <div>
+                <label className="block text-[11px] font-semibold text-slate-700 dark:text-slate-300 mb-1">
+                  Internal Courier Notes / Tracking Info
+                </label>
+                <textarea
+                  rows={2}
+                  value={editNotes}
+                  onChange={(e) => setEditNotes(e.target.value)}
+                  placeholder="e.g., Courier tracking #SF-88991. Special instructions: Call before delivery."
+                  className="w-full px-3 py-2 text-xs rounded-xl bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 text-slate-900 dark:text-white focus:outline-none focus:border-emerald-500 resize-none"
+                />
+              </div>
+
+              {/* Actions */}
+              <div className="flex items-center justify-between pt-3 border-t border-slate-200 dark:border-slate-800">
+                {isSuperAdmin ? (
+                  <button
+                    type="button"
+                    onClick={() => handleDeleteOrder(editingOrder.id, editingOrder.orderNumber)}
+                    className="px-4 py-2 bg-rose-50 text-rose-700 dark:bg-rose-950 dark:text-rose-400 hover:bg-rose-100 rounded-xl text-xs font-semibold flex items-center gap-1.5 transition-colors"
+                  >
+                    <Trash2 size={14} />
+                    <span>Delete Order</span>
+                  </button>
+                ) : (
+                  <div className="flex items-center gap-1.5 text-xs text-slate-400 dark:text-slate-500">
+                    <Lock size={12} />
+                    <span>Delete is Super Admin only</span>
+                  </div>
+                )}
+
+                <div className="flex items-center gap-2">
+                  <button
+                    type="button"
+                    onClick={() => setEditingOrder(null)}
+                    className="px-4 py-2 rounded-xl border border-slate-200 dark:border-slate-700 hover:bg-slate-100 dark:hover:bg-slate-800 text-slate-700 dark:text-slate-300 text-xs font-semibold"
+                  >
+                    Cancel
+                  </button>
+                  <button
+                    type="submit"
+                    disabled={updateOrderMutation.isPending}
+                    className="px-5 py-2 bg-emerald-600 hover:bg-emerald-500 text-white rounded-xl text-xs font-semibold shadow-xs disabled:opacity-50 flex items-center gap-1.5"
+                  >
+                    <span>Save Order Changes</span>
+                  </button>
+                </div>
+              </div>
+            </form>
           </div>
         </div>
       )}

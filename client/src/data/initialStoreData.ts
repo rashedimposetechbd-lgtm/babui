@@ -13,11 +13,11 @@ export const initialStoreData = {
     "siteAddress": "House 12, Road 4, Rampura, Dhaka - 1219, Bangladesh",
     "businessHours": "Saturday - Thursday: 9:00 AM - 9:00 PM",
     "googleMapsUrl": "https://maps.google.com/?q=Rampura+Dhaka+Bangladesh",
-    "facebookUrl": "https://facebook.com/ghorerbazarbd",
-    "instagramUrl": "https://instagram.com/ghorerbazarbd",
-    "youtubeUrl": "https://youtube.com/@ghorerbazar",
-    "tiktokUrl": "https://tiktok.com/@ghorerbazar",
-    "messengerUrl": "https://m.me/ghorerbazarbd",
+    "facebookUrl": "https://facebook.com/babuishopbd",
+    "instagramUrl": "https://instagram.com/babuishopbd",
+    "youtubeUrl": "https://youtube.com/@babuishop",
+    "tiktokUrl": "https://tiktok.com/@babuishop",
+    "messengerUrl": "https://m.me/babuishopbd",
     "shippingInsideDhaka": 70,
     "shippingOutsideDhaka": 130,
     "freeShippingThreshold": 1500,
@@ -424,8 +424,8 @@ export const initialStoreData = {
   "brands": [
     {
       "id": 1,
-      "name": "Ghorerbazar",
-      "slug": "ghorerbazar",
+      "name": "Babui Shop",
+      "slug": "babuishop",
       "logoUrl": null,
       "description": "Flagship house brand delivering direct from farmers and beekeepers.",
       "sortOrder": 1,
@@ -1072,7 +1072,7 @@ export const initialStoreData = {
     },
     {
       "id": 2,
-      "code": "ghorerbazar100",
+      "code": "babuishop100",
       "discountType": "fixed",
       "discountValue": 100,
       "minOrderAmount": 1500,
@@ -1365,19 +1365,19 @@ export const initialStoreData = {
       "id": 1,
       "title": "About Us",
       "slug": "about-us",
-      "content": "<h2>About Ghorer Bazar</h2><p>Ghorer Bazar started with a humble vision: to deliver 100% natural, adulteration-free, and chemical-free pantry staples directly to health-conscious families across Bangladesh.</p><p>We collect raw honey directly from trusted beekeepers and wild honey collectors (mouwals) in the Sundarbans. Our cold-pressed mustard oil is produced using authentic low-temperature wood ghani pressing, retaining every drop of essential nutrients and unadulterated aroma.</p><p>Today, more than 10,000 households trust Ghorer Bazar as their primary supplier for natural health foods, Madinah dates, ghee, and pure spices.</p>",
+      "content": "<h2>About Babui Shop</h2><p>Babui Shop started with a humble vision: to deliver 100% natural, adulteration-free, and chemical-free pantry staples directly to health-conscious families across Bangladesh.</p><p>We collect raw honey directly from trusted beekeepers and wild honey collectors (mouwals) in the Sundarbans. Our cold-pressed mustard oil is produced using authentic low-temperature wood ghani pressing, retaining every drop of essential nutrients and unadulterated aroma.</p><p>Today, more than 10,000 households trust Babui Shop as their primary supplier for natural health foods, Madinah dates, ghee, and pure spices.</p>",
       "isPublished": true,
-      "metaTitle": "About Us - Ghorer Bazar Bangladesh",
-      "metaDescription": "Learn about Ghorer Bazar's mission to bring authentic, farm-fresh natural foods to your dining table.",
+      "metaTitle": "About Us - Babui Shop Bangladesh",
+      "metaDescription": "Learn about Babui Shop's mission to bring authentic, farm-fresh natural foods to your dining table.",
       "updatedAt": "2026-09-20T05:30:56.717Z"
     },
     {
       "id": 2,
       "title": "Contact Us",
       "slug": "contact-us",
-      "content": "<h2>Customer Support & Location</h2><p>Have questions about an order or our natural products? Our dedicated customer care team is available Saturday through Thursday from 9:00 AM to 9:00 PM.</p><p><strong>Hotline:</strong> +8809642922922<br/><strong>WhatsApp:</strong> +8801712345678<br/><strong>Email:</strong> contact@ghorerbazar.com<br/><strong>Warehouse & Office:</strong> House 12, Road 4, Rampura, Dhaka - 1219, Bangladesh.</p>",
+      "content": "<h2>Customer Support & Location</h2><p>Have questions about an order or our natural products? Our dedicated customer care team is available Saturday through Thursday from 9:00 AM to 9:00 PM.</p><p><strong>Hotline:</strong> +8809642922922<br/><strong>WhatsApp:</strong> +8801712345678<br/><strong>Email:</strong> contact@babuishop.com<br/><strong>Warehouse & Office:</strong> House 12, Road 4, Rampura, Dhaka - 1219, Bangladesh.</p>",
       "isPublished": true,
-      "metaTitle": "Contact Us - Ghorer Bazar Support",
+      "metaTitle": "Contact Us - Babui Shop Support",
       "metaDescription": "Reach our customer care team via phone, WhatsApp, or email for quick assistance.",
       "updatedAt": "2026-09-20T05:30:56.717Z"
     },
@@ -1387,7 +1387,7 @@ export const initialStoreData = {
       "slug": "faq",
       "content": "<h2>Common Questions</h2><h3>Is your honey 100% natural?</h3><p>Yes, absolutely. Our honey is neither heated nor pasteurized and contains zero artificial sugar syrup. It is tested for natural enzymes and pollen count.</p><h3>How fast is delivery?</h3><p>Inside Dhaka city, orders are delivered within 24 to 48 hours. Outside Dhaka, delivery takes 48 to 72 hours via partner courier services (Steadfast/Pathao/eCourier).</p><h3>Can I inspect the parcel before paying?</h3><p>Yes! We offer full Cash on Delivery with parcel inspection upon delivery.</p>",
       "isPublished": true,
-      "metaTitle": "FAQ - Ghorer Bazar",
+      "metaTitle": "FAQ - Babui Shop",
       "metaDescription": "Frequently asked questions about our products, delivery timelines, and return policy.",
       "updatedAt": "2026-09-20T05:30:56.717Z"
     },
@@ -1397,8 +1397,8 @@ export const initialStoreData = {
       "slug": "privacy-policy",
       "content": "<h2>Privacy Policy</h2><p>We respect your privacy and never sell or share your personal contact details or order history with third parties. Your address and telephone number are strictly utilized for delivery fulfillment and order tracking.</p>",
       "isPublished": true,
-      "metaTitle": "Privacy Policy - Ghorer Bazar",
-      "metaDescription": "Read how Ghorer Bazar safeguards your personal data.",
+      "metaTitle": "Privacy Policy - Babui Shop",
+      "metaDescription": "Read how Babui Shop safeguards your personal data.",
       "updatedAt": "2026-09-20T05:30:56.717Z"
     },
     {
@@ -1407,7 +1407,7 @@ export const initialStoreData = {
       "slug": "return-refund",
       "content": "<h2>7-Day Hassle-Free Returns</h2><p>If you receive a damaged jar or are unsatisfied with the purity or quality of any product, you can initiate a return or exchange within 7 days of delivery. Contact our hotline (+8809642922922) with your order number for an immediate replacement or full refund.</p>",
       "isPublished": true,
-      "metaTitle": "Return & Refund Policy - Ghorer Bazar",
+      "metaTitle": "Return & Refund Policy - Babui Shop",
       "metaDescription": "Understand our 7-day hassle-free replacement and refund guidelines.",
       "updatedAt": "2026-09-20T05:30:56.717Z"
     },
@@ -1417,7 +1417,7 @@ export const initialStoreData = {
       "slug": "shipping-policy",
       "content": "<h2>Shipping Details</h2><p>Standard delivery inside Dhaka is ৳70. Outside Dhaka delivery is ৳130. Orders with a cart value of ৳1,500 or more enjoy free shipping nationwide.</p>",
       "isPublished": true,
-      "metaTitle": "Shipping Policy - Ghorer Bazar",
+      "metaTitle": "Shipping Policy - Babui Shop",
       "metaDescription": "Information on shipping fees, free delivery limits, and couriers.",
       "updatedAt": "2026-09-20T05:30:56.717Z"
     }
@@ -1473,7 +1473,7 @@ export const initialStoreData = {
     {
       "id": 1,
       "name": "Super Administrator",
-      "email": "admin@ghorerbazar.com",
+      "email": "admin@babuishop.com",
       "password": "admin",
       "role": "super_admin",
       "permissions": [
@@ -1486,7 +1486,7 @@ export const initialStoreData = {
     {
       "id": 2,
       "name": "Product Manager",
-      "email": "products@ghorerbazar.com",
+      "email": "products@babuishop.com",
       "password": "admin",
       "role": "product_manager",
       "permissions": [
@@ -1503,7 +1503,7 @@ export const initialStoreData = {
     {
       "id": 3,
       "name": "Order & Logistics Lead",
-      "email": "orders@ghorerbazar.com",
+      "email": "orders@babuishop.com",
       "password": "admin",
       "role": "order_manager",
       "permissions": [
@@ -1630,7 +1630,7 @@ export const initialStoreData = {
       "action": "BRAND_UPDATED",
       "entityType": "brand",
       "entityId": 1,
-      "details": "Updated brand Ghorerbazar",
+      "details": "Updated brand Babui Shop",
       "createdAt": "2026-09-20T07:45:54.398Z"
     },
     {

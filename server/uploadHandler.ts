@@ -54,4 +54,19 @@ export function registerUploadRoutes(app: Express) {
       return res.status(500).json({ error: error.message || "Failed to upload file" });
     }
   });
+
+  // Endpoints to download the MySQL dump file directly for cPanel / phpMyAdmin
+  const serveSqlFile = (req: Request, res: Response) => {
+    const sqlPath = path.resolve(process.cwd(), "cpanel_database.sql");
+    if (!fs.existsSync(sqlPath)) {
+      return res.status(404).send("cpanel_database.sql not found. Please run 'npm run db:dump' first.");
+    }
+    res.setHeader("Content-Disposition", 'attachment; filename="cpanel_database.sql"');
+    res.setHeader("Content-Type", "application/sql; charset=utf-8");
+    return res.sendFile(sqlPath);
+  };
+
+  app.get("/cpanel_database.sql", serveSqlFile);
+  app.get("/api/download-cpanel-sql", serveSqlFile);
+  app.get("/babuishop_database.sql", serveSqlFile);
 }

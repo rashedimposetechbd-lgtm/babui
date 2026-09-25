@@ -119,7 +119,7 @@ const mockCombos: Combo[] = [
 ];
 
 const mockBrands: Brand[] = [
-  { id: 1, name: "Ghorerbazar", logoUrl: null, createdAt: new Date() },
+  { id: 1, name: "Babui Shop", logoUrl: null, createdAt: new Date() },
   { id: 2, name: "Glarvest", logoUrl: null, createdAt: new Date() },
   { id: 3, name: "Khejuri", logoUrl: null, createdAt: new Date() },
   { id: 4, name: "Shosti food", logoUrl: null, createdAt: new Date() },
@@ -131,7 +131,7 @@ let inMemoryUsers: User[] = [
     id: 1,
     openId: "demo-user-1",
     name: "Guest Shopper",
-    email: "guest@ghorerbazar.com",
+    email: "guest@babuishop.com",
     loginMethod: "guest",
     role: "user",
     createdAt: new Date(),

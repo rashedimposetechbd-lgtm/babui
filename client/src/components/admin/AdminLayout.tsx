@@ -35,6 +35,7 @@ import {
   AlertCircle,
   Clock,
   Check,
+  Database,
 } from "lucide-react";
 import { trpc } from "@/lib/trpc";
 import { useTheme } from "@/contexts/ThemeContext";
@@ -146,6 +147,7 @@ export default function AdminLayout({
         { name: "Website Settings", href: "/admin/settings", icon: Settings, permission: "settings" },
         { name: "Shipping & Payment", href: "/admin/shipping-payment", icon: Truck, permission: "settings" },
         { name: "SEO & Social", href: "/admin/seo", icon: Globe, permission: "seo" },
+        { name: "cPanel & MySQL Export", href: "/admin/database", icon: Database, permission: "settings" },
         { name: "Admin Users & RBAC", href: "/admin/users", icon: UserCheck, permission: "all" },
         { name: "Activity Logs", href: "/admin/activity-logs", icon: History, permission: "all" },
         { name: "Reports & Analytics", href: "/admin/reports", icon: BarChart3, permission: "dashboard" },

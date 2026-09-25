@@ -114,5 +114,5 @@ Click **Save** at the top after adding the variables.
 ## 🛠️ Admin Access
 - **Admin URL**: `https://yourdomain.com/admin`
 - **Default Admin Account**:
-  - Email: `admin@ghorerbazar.com`
+  - Email: `admin@babuishop.com`
   - Role: Super Administrator (pre-seeded in `admin_users` table)

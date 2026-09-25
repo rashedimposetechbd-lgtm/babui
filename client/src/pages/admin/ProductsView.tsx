@@ -103,6 +103,7 @@ export default function ProductsView() {
   const [metaTitle, setMetaTitle] = useState("");
   const [metaDescription, setMetaDescription] = useState("");
   const [variants, setVariants] = useState<VariantInput[]>([]);
+  const utils = trpc.useUtils();
 
   // TRPC queries
   const { data: products = [], refetch, isLoading } = trpc.admin.products.list.useQuery({
@@ -250,6 +251,9 @@ export default function ProductsView() {
       toast.success(editingId ? "Product updated successfully!" : "New product created!");
       setIsModalOpen(false);
       refetch();
+      utils.products.invalidate();
+      utils.admin.products.invalidate();
+      utils.admin.dashboard.invalidate();
     } catch (err: any) {
       toast.error(err.message || "Failed to save product");
     }
@@ -261,6 +265,9 @@ export default function ProductsView() {
       await deleteMutation.mutateAsync({ id });
       toast.success("Product deleted");
       refetch();
+      utils.products.invalidate();
+      utils.admin.products.invalidate();
+      utils.admin.dashboard.invalidate();
     } catch (err: any) {
       toast.error("Error deleting product");
     }
@@ -314,6 +321,9 @@ export default function ProductsView() {
       setSelectedProductIds([]);
       setShowBulkModal(false);
       refetch();
+      utils.products.invalidate();
+      utils.admin.products.invalidate();
+      utils.admin.dashboard.invalidate();
     } catch (err: any) {
       toast.error("Bulk action failed");
     }
@@ -336,7 +346,7 @@ export default function ProductsView() {
     const encodedUri = encodeURI(csvContent);
     const link = document.createElement("a");
     link.setAttribute("href", encodedUri);
-    link.setAttribute("download", `ghorer_bazar_products_${Date.now()}.csv`);
+    link.setAttribute("download", `babui_shop_products_${Date.now()}.csv`);
     document.body.appendChild(link);
     link.click();
     document.body.removeChild(link);

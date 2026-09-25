@@ -168,6 +168,8 @@ export async function loadStateFromMysql(): Promise<Partial<CMSDataStore> | null
       if (orderRows && orderRows.length > 0) {
         state.orders = orderRows.map((o) => ({
           ...o,
+          createdAt: o.createdAt instanceof Date ? o.createdAt.toISOString() : String(o.createdAt || new Date().toISOString()),
+          updatedAt: o.updatedAt instanceof Date ? o.updatedAt.toISOString() : String(o.updatedAt || new Date().toISOString()),
           subtotal: Number(o.subtotal) || 0,
           discount: Number(o.discount) || 0,
           couponDiscount: Number(o.couponDiscount) || 0,
@@ -197,6 +199,8 @@ export async function loadStateFromMysql(): Promise<Partial<CMSDataStore> | null
       if (custRows && custRows.length > 0) {
         state.customers = custRows.map((c) => ({
           ...c,
+          createdAt: c.createdAt instanceof Date ? c.createdAt.toISOString() : String(c.createdAt || new Date().toISOString()),
+          updatedAt: c.updatedAt instanceof Date ? c.updatedAt.toISOString() : String(c.updatedAt || new Date().toISOString()),
           totalOrders: Number(c.totalOrders) || 0,
           totalSpent: Number(c.totalSpent) || 0,
         }));
@@ -290,3 +294,29 @@ export function triggerMysqlSync(data: CMSDataStore) {
     }
   }, 1000);
 }
+
+export async function deleteOrderFromMysql(orderId: number): Promise<boolean> {
+  const pool = getMysqlPool();
+  if (!pool) return false;
+  try {
+    await pool.query("DELETE FROM order_items WHERE orderId = ?", [orderId]);
+    await pool.query("DELETE FROM orders WHERE id = ?", [orderId]);
+    return true;
+  } catch (err) {
+    console.warn("[MySQL] Failed to delete order from MySQL:", err);
+    return false;
+  }
+}
+
+export async function deleteCustomerFromMysql(customerId: number): Promise<boolean> {
+  const pool = getMysqlPool();
+  if (!pool) return false;
+  try {
+    await pool.query("DELETE FROM customers WHERE id = ?", [customerId]);
+    return true;
+  } catch (err) {
+    console.warn("[MySQL] Failed to delete customer from MySQL:", err);
+    return false;
+  }
+}
+

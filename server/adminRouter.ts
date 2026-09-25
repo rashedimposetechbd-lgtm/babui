@@ -15,7 +15,7 @@ export const adminRouter = router({
       .mutation(({ input }) => {
         const user = cmsDataStore.authenticateAdmin(input.email, input.password);
         if (!user) {
-          throw new Error("Invalid email or password. You can use admin@ghorerbazar.com / admin123456");
+          throw new Error("Invalid email or password.");
         }
         return {
           success: true,
@@ -522,6 +522,60 @@ export const adminRouter = router({
         return order;
       }),
 
+    update: publicProcedure
+      .input(
+        z.object({
+          id: z.number(),
+          customerName: z.string().optional(),
+          customerPhone: z.string().optional(),
+          customerEmail: z.string().optional(),
+          shippingAddress: z.string().optional(),
+          division: z.string().optional(),
+          district: z.string().optional(),
+          upazila: z.string().optional(),
+          shippingFee: z.number().optional(),
+          discount: z.number().optional(),
+          total: z.number().optional(),
+          paymentMethod: z.enum(["cod", "bkash", "nagad", "sslcommerz", "card"]).optional(),
+          paymentStatus: z.enum(["pending", "paid", "failed", "refunded"]).optional(),
+          orderStatus: z
+            .enum([
+              "pending",
+              "confirmed",
+              "processing",
+              "packed",
+              "shipped",
+              "out_for_delivery",
+              "delivered",
+              "cancelled",
+              "returned",
+              "refunded",
+            ])
+            .optional(),
+          notes: z.string().optional(),
+        })
+      )
+      .mutation(({ input }) => {
+        const { id, ...data } = input;
+        const res = cmsDataStore.updateOrder(id, data);
+        if (!res) throw new Error("Order not found");
+        return res;
+      }),
+
+    delete: publicProcedure
+      .input(
+        z.object({
+          id: z.number(),
+          adminRole: z.string().optional(),
+        })
+      )
+      .mutation(({ input }) => {
+        if (input.adminRole && input.adminRole !== "super_admin") {
+          throw new Error("Permission denied: Only Super Admin can delete orders.");
+        }
+        return { success: cmsDataStore.deleteOrder(input.id) };
+      }),
+
     create: publicProcedure
       .input(
         z.object({
@@ -609,6 +663,20 @@ export const adminRouter = router({
         const res = cmsDataStore.updateCustomer(id, data);
         if (!res) throw new Error("Customer not found");
         return res;
+      }),
+
+    delete: publicProcedure
+      .input(
+        z.object({
+          id: z.number(),
+          adminRole: z.string().optional(),
+        })
+      )
+      .mutation(({ input }) => {
+        if (input.adminRole && input.adminRole !== "super_admin") {
+          throw new Error("Permission denied: Only Super Admin can delete customers.");
+        }
+        return { success: cmsDataStore.deleteCustomer(input.id) };
       }),
   }),
 

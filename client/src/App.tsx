@@ -104,6 +104,12 @@ function Router() {
       <Route path={"/admin/seo"}>
         {() => <ProtectedAdminRoute component={SettingsView} />}
       </Route>
+      <Route path={"/admin/database"}>
+        {() => <ProtectedAdminRoute component={SettingsView} />}
+      </Route>
+      <Route path={"/admin/cpanel"}>
+        {() => <ProtectedAdminRoute component={SettingsView} />}
+      </Route>
       <Route path={"/admin/users"}>
         {() => <ProtectedAdminRoute component={AdminUsersView} />}
       </Route>

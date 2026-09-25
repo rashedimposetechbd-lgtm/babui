@@ -54,20 +54,17 @@ export const appRouter = router({
       }),
   }),
 
-  // Product procedures (connected to live CMS data store with fallback)
+  // Product procedures (connected to live CMS data store)
   products: router({
     list: publicProcedure.query(async () => {
       const liveProducts = cmsDataStore.getProducts().filter((p) => p.status === "active");
-      if (liveProducts.length > 0) {
-        return liveProducts.map((p) => ({
-          ...p,
-          price: String(p.price),
-          discountPrice: p.discountPrice ? String(p.discountPrice) : null,
-          discountPercentage: p.discountPercentage ? String(p.discountPercentage) : null,
-          description: p.shortDescription || p.fullDescription || "",
-        }));
-      }
-      return db.getAllProducts();
+      return liveProducts.map((p) => ({
+        ...p,
+        price: String(p.price),
+        discountPrice: p.discountPrice ? String(p.discountPrice) : null,
+        discountPercentage: p.discountPercentage ? String(p.discountPercentage) : null,
+        description: p.shortDescription || p.fullDescription || "",
+      }));
     }),
 
     byCategory: publicProcedure
@@ -76,16 +73,13 @@ export const appRouter = router({
         const liveProducts = cmsDataStore
           .getProducts()
           .filter((p) => p.categoryId === input.categoryId && p.status === "active");
-        if (liveProducts.length > 0) {
-          return liveProducts.map((p) => ({
-            ...p,
-            price: String(p.price),
-            discountPrice: p.discountPrice ? String(p.discountPrice) : null,
-            discountPercentage: p.discountPercentage ? String(p.discountPercentage) : null,
-            description: p.shortDescription || p.fullDescription || "",
-          }));
-        }
-        return db.getProductsByCategory(input.categoryId);
+        return liveProducts.map((p) => ({
+          ...p,
+          price: String(p.price),
+          discountPrice: p.discountPrice ? String(p.discountPrice) : null,
+          discountPercentage: p.discountPercentage ? String(p.discountPercentage) : null,
+          description: p.shortDescription || p.fullDescription || "",
+        }));
       }),
 
     byId: publicProcedure
@@ -101,7 +95,7 @@ export const appRouter = router({
             description: p.shortDescription || p.fullDescription || "",
           };
         }
-        return db.getProductById(input.id);
+        return null;
       }),
 
     search: publicProcedure
@@ -111,16 +105,13 @@ export const appRouter = router({
         const live = cmsDataStore
           .getProducts()
           .filter((p) => p.status === "active" && p.name.toLowerCase().includes(q));
-        if (live.length > 0) {
-          return live.map((p) => ({
-            ...p,
-            price: String(p.price),
-            discountPrice: p.discountPrice ? String(p.discountPrice) : null,
-            discountPercentage: p.discountPercentage ? String(p.discountPercentage) : null,
-            description: p.shortDescription || p.fullDescription || "",
-          }));
-        }
-        return db.searchProducts(input.query);
+        return live.map((p) => ({
+          ...p,
+          price: String(p.price),
+          discountPrice: p.discountPrice ? String(p.discountPrice) : null,
+          discountPercentage: p.discountPercentage ? String(p.discountPercentage) : null,
+          description: p.shortDescription || p.fullDescription || "",
+        }));
       }),
 
     topSelling: publicProcedure
@@ -130,16 +121,13 @@ export const appRouter = router({
           .getProducts()
           .filter((p) => p.status === "active" && p.isBestSelling)
           .slice(0, input.limit);
-        if (live.length > 0) {
-          return live.map((p) => ({
-            ...p,
-            price: String(p.price),
-            discountPrice: p.discountPrice ? String(p.discountPrice) : null,
-            discountPercentage: p.discountPercentage ? String(p.discountPercentage) : null,
-            description: p.shortDescription || p.fullDescription || "",
-          }));
-        }
-        return db.getTopSellingProducts(input.limit);
+        return live.map((p) => ({
+          ...p,
+          price: String(p.price),
+          discountPrice: p.discountPrice ? String(p.discountPrice) : null,
+          discountPercentage: p.discountPercentage ? String(p.discountPercentage) : null,
+          description: p.shortDescription || p.fullDescription || "",
+        }));
       }),
 
     newArrivals: publicProcedure
@@ -149,35 +137,26 @@ export const appRouter = router({
           .getProducts()
           .filter((p) => p.status === "active" && p.isNewArrival)
           .slice(0, input.limit);
-        if (live.length > 0) {
-          return live.map((p) => ({
-            ...p,
-            price: String(p.price),
-            discountPrice: p.discountPrice ? String(p.discountPrice) : null,
-            discountPercentage: p.discountPercentage ? String(p.discountPercentage) : null,
-            description: p.shortDescription || p.fullDescription || "",
-          }));
-        }
-        return db.getNewArrivalProducts(input.limit);
+        return live.map((p) => ({
+          ...p,
+          price: String(p.price),
+          discountPrice: p.discountPrice ? String(p.discountPrice) : null,
+          discountPercentage: p.discountPercentage ? String(p.discountPercentage) : null,
+          description: p.shortDescription || p.fullDescription || "",
+        }));
       }),
   }),
 
   // Category procedures
   categories: router({
     list: publicProcedure.query(async () => {
-      const liveCats = cmsDataStore.getCategories().filter((c) => c.isActive);
-      if (liveCats.length > 0) {
-        return liveCats;
-      }
-      return db.getAllCategories();
+      return cmsDataStore.getCategories().filter((c) => c.isActive);
     }),
 
     byId: publicProcedure
       .input(z.object({ id: z.number() }))
       .query(async ({ input }) => {
-        const cat = cmsDataStore.getCategoryById(input.id);
-        if (cat) return cat;
-        return db.getCategoryById(input.id);
+        return cmsDataStore.getCategoryById(input.id) || null;
       }),
   }),
 
@@ -197,11 +176,7 @@ export const appRouter = router({
   // Brand procedures
   brands: router({
     list: publicProcedure.query(async () => {
-      const liveBrands = cmsDataStore.getBrands().filter((b) => b.isActive);
-      if (liveBrands.length > 0) {
-        return liveBrands;
-      }
-      return db.getAllBrands();
+      return cmsDataStore.getBrands().filter((b) => b.isActive);
     }),
   }),
 
@@ -344,6 +319,36 @@ export const appRouter = router({
     myOrders: publicProcedure.query(async () => {
       return cmsDataStore.getOrders().slice(0, 10);
     }),
+
+    delete: publicProcedure
+      .input(
+        z.object({
+          id: z.number(),
+          adminRole: z.string().optional(),
+        })
+      )
+      .mutation(({ input }) => {
+        if (input.adminRole && input.adminRole !== "super_admin") {
+          throw new Error("Permission denied: Only Super Admin can delete orders.");
+        }
+        return { success: cmsDataStore.deleteOrder(input.id) };
+      }),
+  }),
+
+  customers: router({
+    delete: publicProcedure
+      .input(
+        z.object({
+          id: z.number(),
+          adminRole: z.string().optional(),
+        })
+      )
+      .mutation(({ input }) => {
+        if (input.adminRole && input.adminRole !== "super_admin") {
+          throw new Error("Permission denied: Only Super Admin can delete customers.");
+        }
+        return { success: cmsDataStore.deleteCustomer(input.id) };
+      }),
   }),
 });
 

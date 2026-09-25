@@ -23,12 +23,33 @@ export function getMysqlConfig(): MysqlConfig | null {
   }
 
   // Check individual environment variables (typical for cPanel NodeJS App setup)
-  const host = process.env.DB_HOST || (process.env.DB_NAME ? "localhost" : undefined);
-  const user = process.env.DB_USER;
-  const password = process.env.DB_PASSWORD || process.env.DB_PASS;
-  const database = process.env.DB_NAME || process.env.DB_DATABASE;
-  const port = process.env.DB_PORT ? parseInt(process.env.DB_PORT, 10) : 3306;
-  const socketPath = process.env.DB_SOCKET_PATH;
+  const host =
+    process.env.MYSQL_HOST ||
+    process.env.MYSQLHOST ||
+    process.env.DB_HOST ||
+    (process.env.DB_NAME || process.env.MYSQL_DATABASE ? "localhost" : undefined);
+  const user =
+    process.env.MYSQL_USER ||
+    process.env.MYSQLUSER ||
+    process.env.DB_USER;
+  const password =
+    process.env.MYSQL_PASSWORD ||
+    process.env.MYSQLPASSWORD ||
+    process.env.MYSQL_PASS ||
+    process.env.DB_PASSWORD ||
+    process.env.DB_PASS;
+  const database =
+    process.env.MYSQL_DATABASE ||
+    process.env.MYSQLDATABASE ||
+    process.env.MYSQL_DB ||
+    process.env.DB_NAME ||
+    process.env.DB_DATABASE;
+  const rawPort =
+    process.env.MYSQL_PORT ||
+    process.env.MYSQLPORT ||
+    process.env.DB_PORT;
+  const port = rawPort ? parseInt(rawPort, 10) : 3306;
+  const socketPath = process.env.MYSQL_SOCKET || process.env.DB_SOCKET_PATH;
 
   if (database && user) {
     return {

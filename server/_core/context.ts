@@ -26,7 +26,7 @@ export async function createContext(
       id: 1,
       openId: "demo-user-1",
       name: "Guest Shopper",
-      email: "guest@ghorerbazar.com",
+      email: "guest@babuishop.com",
       loginMethod: "guest",
       role: "user",
       createdAt: new Date(),

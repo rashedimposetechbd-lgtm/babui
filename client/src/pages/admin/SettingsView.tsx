@@ -14,6 +14,12 @@ import {
   Globe,
   Upload,
   Search,
+  Database,
+  Download,
+  Server,
+  FileCode,
+  Copy,
+  Check,
 } from "lucide-react";
 import { toast } from "sonner";
 
@@ -30,10 +36,11 @@ export default function SettingsView() {
   const [isUploadingLogo, setIsUploadingLogo] = useState(false);
   const [isUploadingFavicon, setIsUploadingFavicon] = useState(false);
 
-  const [activeTab, setActiveTab] = useState<"general" | "shipping" | "payment" | "seo" | "social">(() => {
+  const [activeTab, setActiveTab] = useState<"general" | "shipping" | "payment" | "seo" | "social" | "database">(() => {
     if (typeof window !== "undefined") {
       if (window.location.pathname.includes("shipping-payment")) return "shipping";
       if (window.location.pathname.includes("seo")) return "seo";
+      if (window.location.pathname.includes("database") || window.location.pathname.includes("cpanel")) return "database";
     }
     return "general";
   });
@@ -43,15 +50,17 @@ export default function SettingsView() {
       setActiveTab("shipping");
     } else if (location.includes("seo")) {
       setActiveTab("seo");
+    } else if (location.includes("database") || location.includes("cpanel")) {
+      setActiveTab("database");
     } else if (location === "/admin/settings") {
       setActiveTab("general");
     }
   }, [location]);
 
   // SEO state
-  const [metaTitle, setMetaTitle] = useState("Ghorer Bazar - Pure & Organic Food in Bangladesh");
+  const [metaTitle, setMetaTitle] = useState("Babui Shop - Pure & Organic Food in Bangladesh");
   const [metaDescription, setMetaDescription] = useState("Order 100% pure honey, cold pressed mustard oil, ghee, organic dates and groceries across Bangladesh.");
-  const [metaKeywords, setMetaKeywords] = useState("organic food, pure honey, mustard oil, ghee, ghorerbazar, bangladesh");
+  const [metaKeywords, setMetaKeywords] = useState("organic food, pure honey, mustard oil, ghee, babuishop, bangladesh");
   const [ogImageUrl, setOgImageUrl] = useState("https://images.unsplash.com/photo-1542838132-92c53300491e?auto=format&fit=crop&w=1200&q=80");
   const [robotsIndex, setRobotsIndex] = useState(true);
 
@@ -340,6 +349,18 @@ export default function SettingsView() {
         >
           <Share2 size={15} />
           <span>Social Media Links</span>
+        </button>
+
+        <button
+          onClick={() => setActiveTab("database")}
+          className={`py-3 border-b-2 transition-colors flex items-center gap-1.5 ${
+            activeTab === "database"
+              ? "border-emerald-600 text-emerald-600 dark:text-emerald-400 font-semibold"
+              : "border-transparent text-slate-500 hover:text-slate-800"
+          }`}
+        >
+          <Database size={15} />
+          <span>cPanel &amp; MySQL Export</span>
         </button>
       </div>
 
@@ -735,17 +756,201 @@ export default function SettingsView() {
           </div>
         )}
 
-        {/* SUBMIT BUTTON */}
-        <div className="flex justify-end">
-          <button
-            type="submit"
-            disabled={updateMutation.isPending}
-            className="flex items-center gap-1.5 px-6 py-2.5 bg-emerald-600 hover:bg-emerald-500 text-white rounded-xl text-xs font-semibold shadow-xs disabled:opacity-50 transition-all"
-          >
-            <Save size={15} />
-            <span>{updateMutation.isPending ? "Saving..." : "Save All Settings"}</span>
-          </button>
-        </div>
+        {/* CPANEL & MYSQL DATABASE EXPORT TAB */}
+        {activeTab === "database" && (
+          <div className="space-y-6 text-xs">
+            {/* Download Hero Card */}
+            <div className="p-6 bg-gradient-to-br from-emerald-900 via-slate-900 to-slate-950 text-white rounded-2xl shadow-md border border-emerald-500/30">
+              <div className="flex flex-col md:flex-row md:items-center justify-between gap-5">
+                <div className="space-y-2 max-w-xl">
+                  <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-emerald-500/20 text-emerald-300 border border-emerald-500/30 text-[11px] font-semibold">
+                    <Database size={13} />
+                    <span>Ready for cPanel &amp; phpMyAdmin</span>
+                  </div>
+                  <h3 className="text-xl font-bold tracking-tight text-white">
+                    Production MySQL Database File
+                  </h3>
+                  <p className="text-slate-300 text-xs leading-relaxed">
+                    Download the pre-configured <code className="bg-white/10 px-1.5 py-0.5 rounded text-emerald-300">cpanel_database.sql</code> file. It contains all 23 database schemas, foreign keys, indexes, and full seed catalog (products, categories, branding, sliders, and admin users) ready for one-click import into phpMyAdmin.
+                  </p>
+                </div>
+
+                <div className="flex flex-col sm:flex-row md:flex-col gap-2.5 shrink-0">
+                  <a
+                    href="/cpanel_database.sql"
+                    download="cpanel_database.sql"
+                    className="inline-flex items-center justify-center gap-2 px-5 py-3 rounded-xl bg-emerald-500 hover:bg-emerald-400 text-slate-950 font-bold text-xs shadow-lg transition-all active:scale-95"
+                  >
+                    <Download size={16} />
+                    <span>Download cpanel_database.sql</span>
+                  </a>
+                  <a
+                    href="/babuishop_database.sql"
+                    download="babuishop_database.sql"
+                    className="inline-flex items-center justify-center gap-2 px-4 py-2 rounded-xl bg-white/10 hover:bg-white/20 text-white text-xs font-semibold border border-white/15 transition-all"
+                  >
+                    <FileCode size={14} />
+                    <span>Download babuishop_database.sql</span>
+                  </a>
+                </div>
+              </div>
+
+              {/* Quick Specs Badges */}
+              <div className="grid grid-cols-2 sm:grid-cols-4 gap-3 mt-6 pt-5 border-t border-white/10">
+                <div className="bg-white/5 p-3 rounded-xl border border-white/5">
+                  <span className="text-[10px] text-slate-400 block font-medium">Compatible Engines</span>
+                  <span className="font-bold text-emerald-400 text-xs">MySQL 5.7+ / 8.0+ / MariaDB</span>
+                </div>
+                <div className="bg-white/5 p-3 rounded-xl border border-white/5">
+                  <span className="text-[10px] text-slate-400 block font-medium">Character Set / Collation</span>
+                  <span className="font-bold text-emerald-400 text-xs">utf8mb4 / utf8mb4_unicode_ci</span>
+                </div>
+                <div className="bg-white/5 p-3 rounded-xl border border-white/5">
+                  <span className="text-[10px] text-slate-400 block font-medium">Total Tables</span>
+                  <span className="font-bold text-emerald-400 text-xs">23 Relational Tables</span>
+                </div>
+                <div className="bg-white/5 p-3 rounded-xl border border-white/5">
+                  <span className="text-[10px] text-slate-400 block font-medium">Import Strategy</span>
+                  <span className="font-bold text-emerald-400 text-xs">DROP IF EXISTS + Full Seed</span>
+                </div>
+              </div>
+            </div>
+
+            {/* Step-by-Step cPanel Import Guide */}
+            <div className="p-6 bg-white dark:bg-slate-900 border border-slate-200/80 dark:border-slate-800 rounded-2xl shadow-xs space-y-4">
+              <h4 className="text-sm font-bold text-slate-900 dark:text-white flex items-center gap-2">
+                <Server size={16} className="text-emerald-600 dark:text-emerald-400" />
+                <span>How to Import into cPanel phpMyAdmin (5 Simple Steps)</span>
+              </h4>
+
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                <div className="p-4 rounded-xl bg-slate-50 dark:bg-slate-800/60 border border-slate-200/70 dark:border-slate-700/60 space-y-1.5">
+                  <div className="flex items-center gap-2">
+                    <span className="w-5 h-5 rounded-full bg-emerald-600 text-white font-bold text-[11px] flex items-center justify-center">1</span>
+                    <h5 className="font-bold text-slate-900 dark:text-white text-xs">Create Database in cPanel</h5>
+                  </div>
+                  <p className="text-slate-600 dark:text-slate-300 text-[11px] pl-7 leading-relaxed">
+                    Log into cPanel, go to <strong>MySQL® Databases</strong>. Under &ldquo;Create New Database&rdquo;, enter a name like <code className="text-emerald-600 font-mono text-[10px]">babuishop</code> (e.g. <code className="text-slate-700 dark:text-slate-300 font-mono text-[10px]">youruser_babuishop</code>).
+                  </p>
+                </div>
+
+                <div className="p-4 rounded-xl bg-slate-50 dark:bg-slate-800/60 border border-slate-200/70 dark:border-slate-700/60 space-y-1.5">
+                  <div className="flex items-center gap-2">
+                    <span className="w-5 h-5 rounded-full bg-emerald-600 text-white font-bold text-[11px] flex items-center justify-center">2</span>
+                    <h5 className="font-bold text-slate-900 dark:text-white text-xs">Create User &amp; Assign Privileges</h5>
+                  </div>
+                  <p className="text-slate-600 dark:text-slate-300 text-[11px] pl-7 leading-relaxed">
+                    Create a MySQL user with a strong password, then add the user to the database with <strong>ALL PRIVILEGES</strong> checked.
+                  </p>
+                </div>
+
+                <div className="p-4 rounded-xl bg-slate-50 dark:bg-slate-800/60 border border-slate-200/70 dark:border-slate-700/60 space-y-1.5">
+                  <div className="flex items-center gap-2">
+                    <span className="w-5 h-5 rounded-full bg-emerald-600 text-white font-bold text-[11px] flex items-center justify-center">3</span>
+                    <h5 className="font-bold text-slate-900 dark:text-white text-xs">Open phpMyAdmin</h5>
+                  </div>
+                  <p className="text-slate-600 dark:text-slate-300 text-[11px] pl-7 leading-relaxed">
+                    In cPanel home, open <strong>phpMyAdmin</strong>. Select your newly created database from the left-hand sidebar list.
+                  </p>
+                </div>
+
+                <div className="p-4 rounded-xl bg-slate-50 dark:bg-slate-800/60 border border-slate-200/70 dark:border-slate-700/60 space-y-1.5">
+                  <div className="flex items-center gap-2">
+                    <span className="w-5 h-5 rounded-full bg-emerald-600 text-white font-bold text-[11px] flex items-center justify-center">4</span>
+                    <h5 className="font-bold text-slate-900 dark:text-white text-xs">Import the SQL File</h5>
+                  </div>
+                  <p className="text-slate-600 dark:text-slate-300 text-[11px] pl-7 leading-relaxed">
+                    Click the <strong>Import</strong> tab on top. Click <strong>Choose File</strong>, select the downloaded <code className="text-emerald-600 font-mono text-[10px]">cpanel_database.sql</code>, and click <strong>Go / Import</strong> at the bottom.
+                  </p>
+                </div>
+
+                <div className="p-4 rounded-xl bg-slate-50 dark:bg-slate-800/60 border border-slate-200/70 dark:border-slate-700/60 space-y-1.5 md:col-span-2">
+                  <div className="flex items-center gap-2">
+                    <span className="w-5 h-5 rounded-full bg-emerald-600 text-white font-bold text-[11px] flex items-center justify-center">5</span>
+                    <h5 className="font-bold text-slate-900 dark:text-white text-xs">Connect Node.js App (.env credentials)</h5>
+                  </div>
+                  <p className="text-slate-600 dark:text-slate-300 text-[11px] pl-7 leading-relaxed">
+                    In your cPanel project folder (via File Manager or &ldquo;Setup Node.js App&rdquo; environment variables), set:
+                  </p>
+                  <pre className="mt-2 ml-7 p-3 bg-slate-900 text-slate-200 rounded-lg font-mono text-[10px] overflow-x-auto">
+{`MYSQL_HOST=localhost
+MYSQL_PORT=3306
+MYSQL_USER=youruser_dbadmin
+MYSQL_PASSWORD=your_strong_password
+MYSQL_DATABASE=youruser_babuishop`}
+                  </pre>
+                </div>
+              </div>
+            </div>
+
+            {/* Included Database Tables List */}
+            <div className="p-6 bg-white dark:bg-slate-900 border border-slate-200/80 dark:border-slate-800 rounded-2xl shadow-xs space-y-4">
+              <div className="flex items-center justify-between pb-3 border-b border-slate-100 dark:border-slate-800">
+                <h4 className="text-sm font-bold text-slate-900 dark:text-white flex items-center gap-2">
+                  <FileCode size={16} className="text-emerald-600 dark:text-emerald-400" />
+                  <span>23 Database Tables Included in SQL Dump</span>
+                </h4>
+                <span className="text-[11px] font-semibold text-emerald-600 dark:text-emerald-400 bg-emerald-50 dark:bg-emerald-950/40 px-2.5 py-1 rounded-full border border-emerald-200 dark:border-emerald-800">
+                  Full Schema &amp; Seed Data
+                </span>
+              </div>
+
+              <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-2.5">
+                {[
+                  { name: "system_settings", desc: "Store branding, logos, phones, delivery rates" },
+                  { name: "categories", desc: "Categories (Honey, Mustard Oil, Ghee, etc.)" },
+                  { name: "subcategories", desc: "Subcategories with slug & category relation" },
+                  { name: "brands", desc: "Product brands & manufacturers" },
+                  { name: "products", desc: "Product catalog with pricing, stock, SKU & tags" },
+                  { name: "product_images", desc: "Multi-image gallery per product" },
+                  { name: "product_variants", desc: "Variants (500g, 1kg, 5kg, colors)" },
+                  { name: "combos", desc: "Combo & bundle package offers" },
+                  { name: "combo_items", desc: "Products included in combo packages" },
+                  { name: "cartItems", desc: "Guest & user shopping cart storage" },
+                  { name: "orders", desc: "Order details, shipping address, status" },
+                  { name: "order_items", desc: "Line items attached to customer orders" },
+                  { name: "reviews", desc: "Verified buyer customer reviews & ratings" },
+                  { name: "coupons", desc: "Discount promo codes & validity checks" },
+                  { name: "hero_sliders", desc: "Homepage top carousel slides" },
+                  { name: "banners", desc: "Promotional cards & grid banners" },
+                  { name: "promo_bars", desc: "Top announcement header ticker bar" },
+                  { name: "popup_promos", desc: "Modal promotional popup offers" },
+                  { name: "cms_pages", desc: "About Us, Terms, Privacy Policy, Return Policy" },
+                  { name: "media_files", desc: "Uploads library & image assets metadata" },
+                  { name: "activity_logs", desc: "Admin audit log of all system actions" },
+                  { name: "admin_users", desc: "Admin team members with RBAC roles" },
+                  { name: "users", desc: "Registered customers & guest shoppers" },
+                ].map((tbl) => (
+                  <div
+                    key={tbl.name}
+                    className="p-2.5 rounded-xl border border-slate-200/70 dark:border-slate-800 bg-slate-50/50 dark:bg-slate-800/40 flex flex-col justify-between"
+                  >
+                    <div className="font-mono text-[11px] font-bold text-slate-800 dark:text-slate-200">
+                      `{tbl.name}`
+                    </div>
+                    <div className="text-[10px] text-slate-500 dark:text-slate-400 mt-1 leading-snug">
+                      {tbl.desc}
+                    </div>
+                  </div>
+                ))}
+              </div>
+            </div>
+          </div>
+        )}
+
+        {/* SUBMIT BUTTON - Only shown for config form tabs */}
+        {activeTab !== "database" && (
+          <div className="flex justify-end">
+            <button
+              type="submit"
+              disabled={updateMutation.isPending}
+              className="flex items-center gap-1.5 px-6 py-2.5 bg-emerald-600 hover:bg-emerald-500 text-white rounded-xl text-xs font-semibold shadow-xs disabled:opacity-50 transition-all"
+            >
+              <Save size={15} />
+              <span>{updateMutation.isPending ? "Saving..." : "Save All Settings"}</span>
+            </button>
+          </div>
+        )}
       </form>
     </AdminLayout>
   );

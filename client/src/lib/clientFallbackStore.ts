@@ -207,8 +207,10 @@ export function executeProcedure(procName: string, input: any): any {
     // Products
     // -------------------------------------------------------------
     case "admin.products.list":
-    case "products.list":
       return store.products || [];
+
+    case "products.list":
+      return (store.products || []).filter((p) => p.status === "active");
 
     case "admin.products.get":
     case "products.byId": {
@@ -755,6 +757,28 @@ export function executeProcedure(procName: string, input: any): any {
       return { success: false };
     }
 
+    case "admin.orders.update": {
+      const { id, ...data } = input || {};
+      const order = store.orders.find((o) => o.id === Number(id));
+      if (order) {
+        Object.assign(order, data);
+        order.updatedAt = new Date().toISOString();
+        saveStoreData(store);
+        return order;
+      }
+      return null;
+    }
+
+    case "admin.orders.delete": {
+      const { id, adminRole } = typeof input === "object" ? input : { id: input, adminRole: undefined };
+      if (adminRole && adminRole !== "super_admin") {
+        throw new Error("Permission denied: Only Super Admin can delete orders.");
+      }
+      store.orders = (store.orders || []).filter((o) => o.id !== Number(id));
+      saveStoreData(store);
+      return { success: true };
+    }
+
     // -------------------------------------------------------------
     // Customers
     // -------------------------------------------------------------
@@ -769,6 +793,16 @@ export function executeProcedure(procName: string, input: any): any {
         return store.customers[idx];
       }
       return null;
+    }
+
+    case "admin.customers.delete": {
+      const { id, adminRole } = typeof input === "object" ? input : { id: input, adminRole: undefined };
+      if (adminRole && adminRole !== "super_admin") {
+        throw new Error("Permission denied: Only Super Admin can delete customers.");
+      }
+      store.customers = (store.customers || []).filter((c) => c.id !== Number(id));
+      saveStoreData(store);
+      return { success: true };
     }
 
     // -------------------------------------------------------------

@@ -101,10 +101,11 @@ const trpcClient = trpc.createClient({
               trimmed.startsWith("<!doctype") ||
               trimmed.startsWith("<html") ||
               trimmed.startsWith("<?xml") ||
-              (!trimmed.startsWith("[") && !trimmed.startsWith("{"))
+              (!trimmed.startsWith("[") && !trimmed.startsWith("{")) ||
+              trimmed.includes("no procedure found on path")
             ) {
               console.warn(
-                "[Client Fallback] Server returned HTML / non-JSON (typical on Netlify static deploy). Handling via local store fallback."
+                "[Client Fallback] Server returned HTML, non-JSON, or missing procedure (server needs restart/update). Handling via local store fallback."
               );
               return handleClientTrpcFallback(input, init);
             }

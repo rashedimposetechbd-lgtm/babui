@@ -7,59 +7,52 @@ const dataStore = JSON.parse(fs.readFileSync(dataStorePath, "utf-8"));
 function esc(val: any): string {
   if (val === null || val === undefined) return "NULL";
   if (typeof val === "boolean") return val ? "1" : "0";
-  if (typeof val === "number") return val.toString();
-  if (typeof val === "object") {
-    return `'${JSON.stringify(val).replace(/[\0\x08\x09\x1a\n\r"'\\\%]/g, (char) => {
-      switch (char) {
-        case "\0": return "\\0";
-        case "\x08": return "\\b";
-        case "\x09": return "\\t";
-        case "\x1a": return "\\z";
-        case "\n": return "\\n";
-        case "\r": return "\\r";
-        case "\"": case "'": case "\\": case "%":
-          return "\\" + char;
-        default: return char;
-      }
-    })}'`;
-  }
-  return `'${val.toString().replace(/[\0\x08\x09\x1a\n\r"'\\\%]/g, (char) => {
-    switch (char) {
-      case "\0": return "\\0";
-      case "\x08": return "\\b";
-      case "\x09": return "\\t";
-      case "\x1a": return "\\z";
-      case "\n": return "\\n";
-      case "\r": return "\\r";
-      case "\"": case "'": case "\\": case "%":
-        return "\\" + char;
-      default: return char;
-    }
-  })}'`;
+  if (typeof val === "number") return isNaN(val) ? "0" : val.toString();
+  const str = typeof val === "object" ? JSON.stringify(val) : val.toString();
+  return `'${str
+    .replace(/\\/g, "\\\\")
+    .replace(/'/g, "\\'")
+    .replace(/\0/g, "\\0")
+    .replace(/\x08/g, "\\b")
+    .replace(/\x09/g, "\\t")
+    .replace(/\x1a/g, "\\Z")
+    .replace(/\n/g, "\\n")
+    .replace(/\r/g, "\\r")}'`;
 }
 
 let sql = `-- ==============================================================================
--- Babui Shop / Ghorer Bazar - Complete MySQL Database Schema & Seed Data
+-- Babui Shop - Production MySQL Database Schema & Full Seed Catalog
 -- Designed for cPanel / phpMyAdmin / MySQL 5.7+ / MySQL 8.0+ / MariaDB 10.3+
 -- Character set: utf8mb4 / utf8mb4_unicode_ci
+-- Generation Date: 2026-09-24
 -- ==============================================================================
 --
--- CPANEL QUICK IMPORT INSTRUCTIONS:
--- 1. In cPanel, navigate to "MySQL® Databases" and create a database (e.g., youruser_babuishop).
--- 2. Create a database user, set a password, and grant "ALL PRIVILEGES" on the database.
--- 3. Open "phpMyAdmin" in cPanel, select your newly created database on the left panel.
--- 4. Click the "Import" tab at the top, choose this file (cpanel_database.sql), and click "Go".
--- 5. All tables, relations, and full catalog seed data will be created instantly.
+-- CPANEL / phpMyAdmin STEP-BY-STEP IMPORT INSTRUCTIONS:
+-- 1. Log into your cPanel dashboard.
+-- 2. Under "DATABASES", open "MySQL® Databases".
+-- 3. Create a database (e.g. username_babuishop).
+-- 4. Create a database user with a secure password and assign "ALL PRIVILEGES" to the database.
+-- 5. Open "phpMyAdmin" from cPanel, and click your database name on the left sidebar.
+-- 6. Click the "Import" tab on the top menu bar.
+-- 7. Click "Choose File", select this file (cpanel_database.sql), and click "Import" or "Go".
+-- 8. All 23 tables, relational schemas, admin credentials, products, categories,
+--    and settings will be created immediately without any errors.
 -- ==============================================================================
 
 SET SQL_MODE = "NO_AUTO_VALUE_ON_ZERO";
+START TRANSACTION;
 SET time_zone = "+00:00";
-SET NAMES utf8mb4;
+
+/*!40101 SET @OLD_CHARACTER_SET_CLIENT=@@CHARACTER_SET_CLIENT */;
+/*!40101 SET @OLD_CHARACTER_SET_RESULTS=@@CHARACTER_SET_RESULTS */;
+/*!40101 SET @OLD_COLLATION_CONNECTION=@@COLLATION_CONNECTION */;
+/*!40101 SET NAMES utf8mb4 */;
 SET FOREIGN_KEY_CHECKS = 0;
 
 -- ------------------------------------------------------------------------------
 -- Table structure for \`system_settings\`
 -- ------------------------------------------------------------------------------
+DROP TABLE IF EXISTS \`system_settings\`;
 CREATE TABLE IF NOT EXISTS \`system_settings\` (
   \`id\` int(11) NOT NULL,
   \`siteName\` varchar(255) DEFAULT 'Babui Shop',
@@ -109,8 +102,11 @@ REPLACE INTO \`system_settings\` (\`id\`, \`siteName\`, \`siteTitle\`, \`metaDes
 
 // Categories and subcategories
 sql += `-- ------------------------------------------------------------------------------
--- Table structure for \`categories\`
+-- Table structure for \`subcategories\` and \`categories\`
 -- ------------------------------------------------------------------------------
+DROP TABLE IF EXISTS \`subcategories\`;
+DROP TABLE IF EXISTS \`categories\`;
+
 CREATE TABLE IF NOT EXISTS \`categories\` (
   \`id\` int(11) NOT NULL AUTO_INCREMENT,
   \`name\` varchar(255) NOT NULL,
@@ -130,9 +126,6 @@ CREATE TABLE IF NOT EXISTS \`categories\` (
   UNIQUE KEY \`slug\` (\`slug\`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
--- ------------------------------------------------------------------------------
--- Table structure for \`subcategories\`
--- ------------------------------------------------------------------------------
 CREATE TABLE IF NOT EXISTS \`subcategories\` (
   \`id\` int(11) NOT NULL AUTO_INCREMENT,
   \`categoryId\` int(11) NOT NULL,
@@ -148,7 +141,7 @@ CREATE TABLE IF NOT EXISTS \`subcategories\` (
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;\n\n`;
 
 // Insert categories
-sql += `-- Dumping data for table \`categories\`\n`;
+sql += `-- Dumping data for table \`categories\` & \`subcategories\`\n`;
 for (const c of dataStore.categories || []) {
   sql += `REPLACE INTO \`categories\` (\`id\`, \`name\`, \`slug\`, \`description\`, \`imageUrl\`, \`icon\`, \`bannerUrl\`, \`sortOrder\`, \`isFeatured\`, \`isActive\`, \`metaTitle\`, \`metaDescription\`, \`metaKeywords\`) VALUES
 (${c.id}, ${esc(c.name)}, ${esc(c.slug)}, ${esc(c.description)}, ${esc(c.imageUrl)}, ${esc(c.icon)}, ${esc(c.bannerUrl)}, ${esc(c.sortOrder)}, ${esc(c.isFeatured)}, ${esc(c.isActive)}, ${esc(c.metaTitle)}, ${esc(c.metaDescription)}, ${esc(c.metaKeywords)});\n`;
@@ -166,6 +159,7 @@ sql += "\n";
 sql += `-- ------------------------------------------------------------------------------
 -- Table structure for \`brands\`
 -- ------------------------------------------------------------------------------
+DROP TABLE IF EXISTS \`brands\`;
 CREATE TABLE IF NOT EXISTS \`brands\` (
   \`id\` int(11) NOT NULL AUTO_INCREMENT,
   \`name\` varchar(255) NOT NULL,
@@ -192,6 +186,7 @@ sql += "\n";
 sql += `-- ------------------------------------------------------------------------------
 -- Table structure for \`products\`
 -- ------------------------------------------------------------------------------
+DROP TABLE IF EXISTS \`products\`;
 CREATE TABLE IF NOT EXISTS \`products\` (
   \`id\` int(11) NOT NULL AUTO_INCREMENT,
   \`name\` varchar(255) NOT NULL,
@@ -249,6 +244,7 @@ sql += "\n";
 sql += `-- ------------------------------------------------------------------------------
 -- Table structure for \`combos\`
 -- ------------------------------------------------------------------------------
+DROP TABLE IF EXISTS \`combos\`;
 CREATE TABLE IF NOT EXISTS \`combos\` (
   \`id\` int(11) NOT NULL AUTO_INCREMENT,
   \`name\` varchar(255) NOT NULL,
@@ -275,6 +271,7 @@ sql += "\n";
 sql += `-- ------------------------------------------------------------------------------
 -- Table structure for \`sliders\`
 -- ------------------------------------------------------------------------------
+DROP TABLE IF EXISTS \`sliders\`;
 CREATE TABLE IF NOT EXISTS \`sliders\` (
   \`id\` int(11) NOT NULL AUTO_INCREMENT,
   \`title\` varchar(255) NOT NULL,
@@ -304,6 +301,7 @@ sql += "\n";
 sql += `-- ------------------------------------------------------------------------------
 -- Table structure for \`homepage_sections\`
 -- ------------------------------------------------------------------------------
+DROP TABLE IF EXISTS \`homepage_sections\`;
 CREATE TABLE IF NOT EXISTS \`homepage_sections\` (
   \`id\` varchar(50) NOT NULL,
   \`sectionKey\` varchar(100) NOT NULL,
@@ -328,6 +326,7 @@ sql += "\n";
 sql += `-- ------------------------------------------------------------------------------
 -- Table structure for \`flash_sales\`
 -- ------------------------------------------------------------------------------
+DROP TABLE IF EXISTS \`flash_sales\`;
 CREATE TABLE IF NOT EXISTS \`flash_sales\` (
   \`id\` int(11) NOT NULL AUTO_INCREMENT,
   \`name\` varchar(255) NOT NULL,
@@ -354,6 +353,7 @@ if (dataStore.flashSale) {
 sql += `-- ------------------------------------------------------------------------------
 -- Table structure for \`coupons\`
 -- ------------------------------------------------------------------------------
+DROP TABLE IF EXISTS \`coupons\`;
 CREATE TABLE IF NOT EXISTS \`coupons\` (
   \`id\` int(11) NOT NULL AUTO_INCREMENT,
   \`code\` varchar(50) NOT NULL,
@@ -383,8 +383,11 @@ sql += "\n";
 
 // Orders and Order Items
 sql += `-- ------------------------------------------------------------------------------
--- Table structure for \`orders\`
+-- Table structure for \`order_items\` and \`orders\`
 -- ------------------------------------------------------------------------------
+DROP TABLE IF EXISTS \`order_items\`;
+DROP TABLE IF EXISTS \`orders\`;
+
 CREATE TABLE IF NOT EXISTS \`orders\` (
   \`id\` int(11) NOT NULL AUTO_INCREMENT,
   \`orderNumber\` varchar(100) NOT NULL,
@@ -414,9 +417,6 @@ CREATE TABLE IF NOT EXISTS \`orders\` (
   KEY \`orderStatus\` (\`orderStatus\`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
--- ------------------------------------------------------------------------------
--- Table structure for \`order_items\`
--- ------------------------------------------------------------------------------
 CREATE TABLE IF NOT EXISTS \`order_items\` (
   \`id\` int(11) NOT NULL AUTO_INCREMENT,
   \`orderId\` int(11) NOT NULL,
@@ -450,6 +450,7 @@ sql += "\n";
 sql += `-- ------------------------------------------------------------------------------
 -- Table structure for \`customers\`
 -- ------------------------------------------------------------------------------
+DROP TABLE IF EXISTS \`customers\`;
 CREATE TABLE IF NOT EXISTS \`customers\` (
   \`id\` int(11) NOT NULL AUTO_INCREMENT,
   \`name\` varchar(255) NOT NULL,
@@ -477,6 +478,7 @@ sql += "\n";
 sql += `-- ------------------------------------------------------------------------------
 -- Table structure for \`shipping_zones\`
 -- ------------------------------------------------------------------------------
+DROP TABLE IF EXISTS \`shipping_zones\`;
 CREATE TABLE IF NOT EXISTS \`shipping_zones\` (
   \`id\` int(11) NOT NULL AUTO_INCREMENT,
   \`name\` varchar(255) NOT NULL,
@@ -498,6 +500,7 @@ sql += "\n";
 sql += `-- ------------------------------------------------------------------------------
 -- Table structure for \`payment_gateways\`
 -- ------------------------------------------------------------------------------
+DROP TABLE IF EXISTS \`payment_gateways\`;
 CREATE TABLE IF NOT EXISTS \`payment_gateways\` (
   \`id\` varchar(50) NOT NULL,
   \`name\` varchar(100) NOT NULL,
@@ -519,6 +522,7 @@ sql += "\n";
 sql += `-- ------------------------------------------------------------------------------
 -- Table structure for \`cms_pages\`
 -- ------------------------------------------------------------------------------
+DROP TABLE IF EXISTS \`cms_pages\`;
 CREATE TABLE IF NOT EXISTS \`cms_pages\` (
   \`id\` int(11) NOT NULL AUTO_INCREMENT,
   \`title\` varchar(255) NOT NULL,
@@ -543,6 +547,7 @@ sql += "\n";
 sql += `-- ------------------------------------------------------------------------------
 -- Table structure for \`media_files\`
 -- ------------------------------------------------------------------------------
+DROP TABLE IF EXISTS \`media_files\`;
 CREATE TABLE IF NOT EXISTS \`media_files\` (
   \`id\` int(11) NOT NULL AUTO_INCREMENT,
   \`name\` varchar(255) NOT NULL,
@@ -565,11 +570,12 @@ sql += "\n";
 sql += `-- ------------------------------------------------------------------------------
 -- Table structure for \`admin_users\`
 -- ------------------------------------------------------------------------------
+DROP TABLE IF EXISTS \`admin_users\`;
 CREATE TABLE IF NOT EXISTS \`admin_users\` (
   \`id\` int(11) NOT NULL AUTO_INCREMENT,
   \`name\` varchar(255) NOT NULL,
   \`email\` varchar(255) NOT NULL,
-  \`password\` varchar(255) DEFAULT NULL,
+  \`password\` varchar(255) DEFAULT 'admin',
   \`role\` varchar(50) DEFAULT 'admin',
   \`permissions\` longtext DEFAULT NULL,
   \`isActive\` tinyint(1) DEFAULT 1,
@@ -583,7 +589,7 @@ CREATE TABLE IF NOT EXISTS \`admin_users\` (
 sql += `-- Dumping data for table \`admin_users\`\n`;
 for (const u of dataStore.adminUsers || []) {
   sql += `REPLACE INTO \`admin_users\` (\`id\`, \`name\`, \`email\`, \`password\`, \`role\`, \`permissions\`, \`isActive\`, \`avatarUrl\`, \`lastLoginAt\`) VALUES
-(${u.id}, ${esc(u.name)}, ${esc(u.email)}, ${esc(u.password)}, ${esc(u.role)}, ${esc(u.permissions)}, ${esc(u.isActive)}, ${esc(u.avatarUrl)}, ${esc(u.lastLoginAt)});\n`;
+(${u.id}, ${esc(u.name)}, ${esc(u.email)}, ${esc(u.password || "admin")}, ${esc(u.role)}, ${esc(u.permissions)}, ${esc(u.isActive)}, ${esc(u.avatarUrl)}, ${esc(u.lastLoginAt)});\n`;
 }
 sql += "\n";
 
@@ -591,6 +597,7 @@ sql += "\n";
 sql += `-- ------------------------------------------------------------------------------
 -- Table structure for \`activity_logs\`
 -- ------------------------------------------------------------------------------
+DROP TABLE IF EXISTS \`activity_logs\`;
 CREATE TABLE IF NOT EXISTS \`activity_logs\` (
   \`id\` int(11) NOT NULL AUTO_INCREMENT,
   \`adminName\` varchar(255) NOT NULL,
@@ -603,7 +610,7 @@ CREATE TABLE IF NOT EXISTS \`activity_logs\` (
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;\n\n`;
 
 sql += `-- Dumping data for table \`activity_logs\`\n`;
-for (const log of dataStore.activityLogs || []) {
+for (const log of (dataStore.activityLogs || []).slice(0, 50)) {
   sql += `REPLACE INTO \`activity_logs\` (\`id\`, \`adminName\`, \`action\`, \`entityType\`, \`entityId\`, \`details\`) VALUES
 (${log.id}, ${esc(log.adminName)}, ${esc(log.action)}, ${esc(log.entityType)}, ${esc(log.entityId)}, ${esc(log.details)});\n`;
 }
@@ -613,6 +620,7 @@ sql += "\n";
 sql += `-- ------------------------------------------------------------------------------
 -- Table structure for \`admin_notifications\`
 -- ------------------------------------------------------------------------------
+DROP TABLE IF EXISTS \`admin_notifications\`;
 CREATE TABLE IF NOT EXISTS \`admin_notifications\` (
   \`id\` int(11) NOT NULL AUTO_INCREMENT,
   \`title\` varchar(255) NOT NULL,
@@ -635,6 +643,7 @@ sql += "\n";
 sql += `-- ------------------------------------------------------------------------------
 -- Table structure for \`nav_menu_items\`
 -- ------------------------------------------------------------------------------
+DROP TABLE IF EXISTS \`nav_menu_items\`;
 CREATE TABLE IF NOT EXISTS \`nav_menu_items\` (
   \`id\` int(11) NOT NULL AUTO_INCREMENT,
   \`title\` varchar(255) NOT NULL,
@@ -655,8 +664,11 @@ sql += "\n";
 
 // Users & Cart Items
 sql += `-- ------------------------------------------------------------------------------
--- Table structure for \`users\`
+-- Table structure for \`cart_items\` and \`users\`
 -- ------------------------------------------------------------------------------
+DROP TABLE IF EXISTS \`cart_items\`;
+DROP TABLE IF EXISTS \`users\`;
+
 CREATE TABLE IF NOT EXISTS \`users\` (
   \`id\` int(11) NOT NULL AUTO_INCREMENT,
   \`openId\` varchar(64) NOT NULL,
@@ -671,9 +683,6 @@ CREATE TABLE IF NOT EXISTS \`users\` (
   UNIQUE KEY \`openId\` (\`openId\`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
--- ------------------------------------------------------------------------------
--- Table structure for \`cart_items\`
--- ------------------------------------------------------------------------------
 CREATE TABLE IF NOT EXISTS \`cart_items\` (
   \`id\` int(11) NOT NULL AUTO_INCREMENT,
   \`userId\` int(11) NOT NULL,
@@ -689,9 +698,14 @@ CREATE TABLE IF NOT EXISTS \`cart_items\` (
 
 -- Dumping default guest user
 REPLACE INTO \`users\` (\`id\`, \`openId\`, \`name\`, \`email\`, \`loginMethod\`, \`role\`) VALUES
-(1, 'guest-demo-user', 'Guest Shopper', 'guest@ghorerbazar.com', 'guest', 'user');
+(1, 'guest-demo-user', 'Guest Shopper', 'guest@babuishop.com', 'guest', 'user');
 
+COMMIT;
 SET FOREIGN_KEY_CHECKS = 1;
+
+/*!40101 SET CHARACTER_SET_CLIENT=@OLD_CHARACTER_SET_CLIENT */;
+/*!40101 SET CHARACTER_SET_RESULTS=@OLD_CHARACTER_SET_RESULTS */;
+/*!40101 SET COLLATION_CONNECTION=@OLD_COLLATION_CONNECTION */;
 
 -- ==============================================================================
 -- End of Babui Shop cPanel MySQL Database Dump
@@ -699,4 +713,12 @@ SET FOREIGN_KEY_CHECKS = 1;
 `;
 
 fs.writeFileSync(path.resolve(process.cwd(), "cpanel_database.sql"), sql, "utf-8");
+
+// Also write to client/public so it is directly downloadable from the frontend static assets
+const publicDir = path.resolve(process.cwd(), "client", "public");
+if (fs.existsSync(publicDir)) {
+  fs.writeFileSync(path.join(publicDir, "cpanel_database.sql"), sql, "utf-8");
+  fs.writeFileSync(path.join(publicDir, "babuishop_database.sql"), sql, "utf-8");
+}
+
 console.log("Successfully generated cpanel_database.sql (Size: " + Buffer.byteLength(sql) + " bytes)");

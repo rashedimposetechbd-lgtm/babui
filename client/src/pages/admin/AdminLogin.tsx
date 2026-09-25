@@ -9,8 +9,8 @@ export default function AdminLogin() {
   const { login, demoLogin, isLoading } = useAdminAuth();
   const { data: settings } = trpc.storefront.settings.useQuery();
   const siteName = settings?.siteName || "Babui Shop";
-  const [email, setEmail] = useState("admin@ghorerbazar.com");
-  const [password, setPassword] = useState("admin123456");
+  const [email, setEmail] = useState("");
+  const [password, setPassword] = useState("");
   const [errorMsg, setErrorMsg] = useState("");
   const [showApiConfig, setShowApiConfig] = useState(false);
   const [customApiUrl, setCustomApiUrl] = useState(() => {
@@ -86,7 +86,7 @@ export default function AdminLogin() {
                 value={email}
                 onChange={(e) => setEmail(e.target.value)}
                 className="w-full pl-10 pr-4 py-2.5 bg-slate-900/80 border border-slate-700 rounded-xl text-sm text-white focus:outline-none focus:border-emerald-500 transition-colors"
-                placeholder="admin@ghorerbazar.com"
+                placeholder="admin@babuishop.com"
               />
             </div>
           </div>

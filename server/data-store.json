@@ -13,11 +13,11 @@
     "siteAddress": "Dhaka - 1219, Bangladesh",
     "businessHours": "Saturday - Thursday: 9:00 AM - 9:00 PM",
     "googleMapsUrl": "https://maps.google.com/?q=Rampura+Dhaka+Bangladesh",
-    "facebookUrl": "https://facebook.com/ghorerbazarbd",
-    "instagramUrl": "https://instagram.com/ghorerbazarbd",
-    "youtubeUrl": "https://youtube.com/@ghorerbazar",
-    "tiktokUrl": "https://tiktok.com/@ghorerbazar",
-    "messengerUrl": "https://m.me/ghorerbazarbd",
+    "facebookUrl": "https://facebook.com/babuishopbd",
+    "instagramUrl": "https://instagram.com/babuishopbd",
+    "youtubeUrl": "https://youtube.com/@babuishop",
+    "tiktokUrl": "https://tiktok.com/@babuishop",
+    "messengerUrl": "https://m.me/babuishopbd",
     "shippingInsideDhaka": "70.00",
     "shippingOutsideDhaka": "130.00",
     "freeShippingThreshold": "0.00",
@@ -109,79 +109,6 @@
     }
   ],
   "categories": [
-    {
-      "id": 1,
-      "name": "Oil & Ghee",
-      "slug": "oil-ghee",
-      "description": "100\\% pure cold pressed mustard oil and traditional butter ghee.",
-      "imageUrl": "https://images.unsplash.com/photo-1474979266404-7eaacbcd87c5?auto=format&fit=crop&w=400&q=80",
-      "icon": "Droplets",
-      "bannerUrl": "https://images.unsplash.com/photo-1474979266404-7eaacbcd87c5?auto=format&fit=crop&w=1200&q=80",
-      "sortOrder": 1,
-      "isFeatured": true,
-      "isActive": true,
-      "metaTitle": null,
-      "metaDescription": null,
-      "metaKeywords": null,
-      "createdAt": "2026-09-23T19:58:48.000Z",
-      "subcategories": [
-        {
-          "id": 101,
-          "categoryId": 1,
-          "name": "Mustard Oil",
-          "slug": "mustard-oil",
-          "description": "Cold-pressed traditional mustard oil",
-          "imageUrl": null,
-          "sortOrder": 1,
-          "isActive": true,
-          "createdAt": "2026-09-23T19:58:48.000Z"
-        },
-        {
-          "id": 102,
-          "categoryId": 1,
-          "name": "Ghee",
-          "slug": "ghee",
-          "description": "Pure milk butter gawa ghee",
-          "imageUrl": null,
-          "sortOrder": 2,
-          "isActive": true,
-          "createdAt": "2026-09-23T19:58:48.000Z"
-        },
-        {
-          "id": 103,
-          "categoryId": 1,
-          "name": "Olive Oil",
-          "slug": "olive-oil",
-          "description": "Extra virgin imported olive oil",
-          "imageUrl": null,
-          "sortOrder": 3,
-          "isActive": true,
-          "createdAt": "2026-09-23T19:58:48.000Z"
-        },
-        {
-          "id": 104,
-          "categoryId": 1,
-          "name": "Coconut Oil",
-          "slug": "coconut-oil",
-          "description": "Extra virgin cold pressed coconut oil",
-          "imageUrl": null,
-          "sortOrder": 4,
-          "isActive": true,
-          "createdAt": "2026-09-23T19:58:48.000Z"
-        },
-        {
-          "id": 105,
-          "categoryId": 1,
-          "name": "Cooking Oil",
-          "slug": "cooking-oil",
-          "description": "Healthy natural cooking oils",
-          "imageUrl": null,
-          "sortOrder": 5,
-          "isActive": true,
-          "createdAt": "2026-09-23T19:58:48.000Z"
-        }
-      ]
-    },
     {
       "id": 2,
       "name": "Honey",
@@ -507,8 +434,8 @@
   "brands": [
     {
       "id": 1,
-      "name": "Ghorerbazar",
-      "slug": "ghorerbazar",
+      "name": "Babui Shop",
+      "slug": "babuishop",
       "logoUrl": null,
       "bannerUrl": null,
       "description": "Flagship house brand delivering direct from farmers and beekeepers.",
@@ -1252,21 +1179,6 @@
       "createdAt": "2026-09-23T19:58:48.000Z"
     },
     {
-      "id": 2,
-      "code": "ghorerbazar100",
-      "discountType": "fixed",
-      "discountValue": 100,
-      "minOrderAmount": 1500,
-      "maxDiscount": 100,
-      "usageLimit": 200,
-      "perCustomerLimit": 1,
-      "startDate": null,
-      "expiryDate": "2026-10-05T05:30:56.717Z",
-      "isActive": true,
-      "timesUsed": 19,
-      "createdAt": "2026-09-23T19:58:48.000Z"
-    },
-    {
       "id": 3,
       "code": "FREE70",
       "discountType": "fixed",
@@ -1282,205 +1194,8 @@
       "createdAt": "2026-09-23T19:58:48.000Z"
     }
   ],
-  "orders": [
-    {
-      "id": 1005,
-      "orderNumber": "GB-2026-1005",
-      "customerName": "Guest Shopper",
-      "customerPhone": "01629863029",
-      "customerEmail": "guest@ghorerbazar.com",
-      "shippingAddress": "2100 N Stemmons Fwy",
-      "division": "Dhaka",
-      "district": "Dhaka",
-      "upazila": null,
-      "subtotal": 1056,
-      "discount": 0,
-      "couponCode": null,
-      "couponDiscount": 0,
-      "shippingFee": 70,
-      "tax": 0,
-      "total": 1126,
-      "paymentMethod": "cod",
-      "paymentStatus": "pending",
-      "orderStatus": "pending",
-      "notes": null,
-      "createdAt": "2026-09-23T19:58:48.000Z",
-      "updatedAt": "2026-09-23T19:58:48.000Z",
-      "items": []
-    },
-    {
-      "id": 1004,
-      "orderNumber": "GB-2026-1004",
-      "customerName": "Mahbubur Rahman",
-      "customerPhone": "01678901234",
-      "customerEmail": "mahbub@northsouth.edu",
-      "shippingAddress": "Sector 11, Uttara",
-      "division": "Dhaka",
-      "district": "Dhaka",
-      "upazila": "Uttara",
-      "subtotal": 900,
-      "discount": 0,
-      "couponCode": null,
-      "couponDiscount": 0,
-      "shippingFee": 70,
-      "tax": 0,
-      "total": 970,
-      "paymentMethod": "cod",
-      "paymentStatus": "pending",
-      "orderStatus": "pending",
-      "notes": "",
-      "createdAt": "2026-09-23T19:58:48.000Z",
-      "updatedAt": "2026-09-23T19:58:48.000Z",
-      "items": [
-        {
-          "productId": 19,
-          "productName": "Kala Bhuna Masala 500gm",
-          "productImage": "https://images.unsplash.com/photo-1596040033229-a9821ebd058d?auto=format&fit=crop&w=200&q=80",
-          "price": 450,
-          "quantity": 2,
-          "variantName": null,
-          "total": 900
-        }
-      ]
-    },
-    {
-      "id": 1003,
-      "orderNumber": "GB-2026-1003",
-      "customerName": "Sharmin Sultana",
-      "customerPhone": "01911223344",
-      "customerEmail": "sharmin.s@yahoo.com",
-      "shippingAddress": "Block D, Bashundhara R/A",
-      "division": "Dhaka",
-      "district": "Dhaka",
-      "upazila": "Vatara",
-      "subtotal": 2856,
-      "discount": 0,
-      "couponCode": null,
-      "couponDiscount": 0,
-      "shippingFee": 0,
-      "tax": 0,
-      "total": 2856,
-      "paymentMethod": "cod",
-      "paymentStatus": "pending",
-      "orderStatus": "processing",
-      "notes": "Deliver between 2 PM to 6 PM",
-      "createdAt": "2026-09-23T19:58:48.000Z",
-      "updatedAt": "2026-09-23T19:58:48.000Z",
-      "items": [
-        {
-          "productId": 10,
-          "productName": "Gawa Ghee 1kg",
-          "productImage": "https://images.unsplash.com/photo-1542838132-92c53300491e?auto=format&fit=crop&w=200&q=80",
-          "price": 1800,
-          "quantity": 1,
-          "variantName": null,
-          "total": 1800
-        },
-        {
-          "productId": 3,
-          "productName": "Honey Nuts 800gm",
-          "productImage": "https://images.unsplash.com/photo-1599599810769-bcde5a160d32?auto=format&fit=crop&w=200&q=80",
-          "price": 1056,
-          "quantity": 1,
-          "variantName": null,
-          "total": 1056
-        }
-      ]
-    },
-    {
-      "id": 1002,
-      "orderNumber": "GB-2026-1002",
-      "customerName": "Tariqul Islam",
-      "customerPhone": "01819876543",
-      "customerEmail": "tariqul@gmail.com",
-      "shippingAddress": "GEC Circle, Nasirabad Housing",
-      "division": "Chittagong",
-      "district": "Chittagong",
-      "upazila": "Panchlaish",
-      "subtotal": 4000,
-      "discount": 0,
-      "couponCode": null,
-      "couponDiscount": 0,
-      "shippingFee": 130,
-      "tax": 0,
-      "total": 4130,
-      "paymentMethod": "bkash",
-      "paymentStatus": "paid",
-      "orderStatus": "shipped",
-      "notes": "Steadfast Courier tracking ID: SF-994123",
-      "createdAt": "2026-09-23T19:58:48.000Z",
-      "updatedAt": "2026-09-23T19:58:48.000Z",
-      "items": [
-        {
-          "productId": 13,
-          "productName": "Ajwa Premium Fresh Dates 1kg",
-          "productImage": "https://images.unsplash.com/photo-1596704017254-9b121068fb31?auto=format&fit=crop&w=200&q=80",
-          "price": 2000,
-          "quantity": 2,
-          "variantName": null,
-          "total": 4000
-        }
-      ]
-    },
-    {
-      "id": 1001,
-      "orderNumber": "GB-2026-1001",
-      "customerName": "Rashed Imtiaz",
-      "customerPhone": "01712345678",
-      "customerEmail": "rashed@imposetechbd.com",
-      "shippingAddress": "House 45, Road 8, Dhanmondi",
-      "division": "Dhaka",
-      "district": "Dhaka",
-      "upazila": "Dhanmondi",
-      "subtotal": 3150,
-      "discount": 0,
-      "couponCode": "babui10",
-      "couponDiscount": 300,
-      "shippingFee": 0,
-      "tax": 0,
-      "total": 2850,
-      "paymentMethod": "cod",
-      "paymentStatus": "paid",
-      "orderStatus": "delivered",
-      "notes": "Please call before delivering",
-      "createdAt": "2026-09-23T19:58:48.000Z",
-      "updatedAt": "2026-09-23T19:58:48.000Z",
-      "items": [
-        {
-          "productId": 1,
-          "productName": "Black Seed Honey 1kg",
-          "productImage": "https://images.unsplash.com/photo-1587049352846-4a222e784d38?auto=format&fit=crop&w=200&q=80",
-          "price": 1500,
-          "quantity": 1,
-          "variantName": null,
-          "total": 1500
-        },
-        {
-          "productId": 9,
-          "productName": "Deshi Mustard Oil 5 liter",
-          "productImage": "https://images.unsplash.com/photo-1474979266404-7eaacbcd87c5?auto=format&fit=crop&w=200&q=80",
-          "price": 1650,
-          "quantity": 1,
-          "variantName": null,
-          "total": 1650
-        }
-      ]
-    }
-  ],
+  "orders": [],
   "customers": [
-    {
-      "id": 5,
-      "name": "Guest Shopper",
-      "phone": "01629863029",
-      "email": "guest@ghorerbazar.com",
-      "address": "2100 N Stemmons Fwy",
-      "totalOrders": 1,
-      "totalSpent": 1126,
-      "lastOrderDate": "2026-09-23T14:05:59.764Z",
-      "status": "active",
-      "notes": null,
-      "createdAt": "2026-09-23T19:58:48.000Z"
-    },
     {
       "id": 4,
       "name": "Mahbubur Rahman",
@@ -1597,19 +1312,19 @@
       "id": 1,
       "title": "About Us",
       "slug": "about-us",
-      "content": "<h2>About Ghorer Bazar</h2><p>Ghorer Bazar started with a humble vision: to deliver 100% natural, adulteration-free, and chemical-free pantry staples directly to health-conscious families across Bangladesh.</p><p>We collect raw honey directly from trusted beekeepers and wild honey collectors (mouwals) in the Sundarbans. Our cold-pressed mustard oil is produced using authentic low-temperature wood ghani pressing, retaining every drop of essential nutrients and unadulterated aroma.</p><p>Today, more than 10,000 households trust Ghorer Bazar as their primary supplier for natural health foods, Madinah dates, ghee, and pure spices.</p>",
+      "content": "<h2>About Babui Shop</h2><p>Babui Shop started with a humble vision: to deliver 100% natural, adulteration-free, and chemical-free pantry staples directly to health-conscious families across Bangladesh.</p><p>We collect raw honey directly from trusted beekeepers and wild honey collectors (mouwals) in the Sundarbans. Our cold-pressed mustard oil is produced using authentic low-temperature wood ghani pressing, retaining every drop of essential nutrients and unadulterated aroma.</p><p>Today, more than 10,000 households trust Babui Shop as their primary supplier for natural health foods, Madinah dates, ghee, and pure spices.</p>",
       "isPublished": true,
-      "metaTitle": "About Us - Ghorer Bazar Bangladesh",
-      "metaDescription": "Learn about Ghorer Bazar's mission to bring authentic, farm-fresh natural foods to your dining table.",
+      "metaTitle": "About Us - Babui Shop Bangladesh",
+      "metaDescription": "Learn about Babui Shop's mission to bring authentic, farm-fresh natural foods to your dining table.",
       "updatedAt": "2026-09-20T05:30:56.717Z"
     },
     {
       "id": 2,
       "title": "Contact Us",
       "slug": "contact-us",
-      "content": "<h2>Customer Support & Location</h2><p>Have questions about an order or our natural products? Our dedicated customer care team is available Saturday through Thursday from 9:00 AM to 9:00 PM.</p><p><strong>Hotline:</strong> +8809642922922<br/><strong>WhatsApp:</strong> +8801712345678<br/><strong>Email:</strong> contact@ghorerbazar.com<br/><strong>Warehouse & Office:</strong> House 12, Road 4, Rampura, Dhaka - 1219, Bangladesh.</p>",
+      "content": "<h2>Customer Support & Location</h2><p>Have questions about an order or our natural products? Our dedicated customer care team is available Saturday through Thursday from 9:00 AM to 9:00 PM.</p><p><strong>Hotline:</strong> +8809642922922<br/><strong>WhatsApp:</strong> +8801712345678<br/><strong>Email:</strong> contact@babuishop.com<br/><strong>Warehouse & Office:</strong> House 12, Road 4, Rampura, Dhaka - 1219, Bangladesh.</p>",
       "isPublished": true,
-      "metaTitle": "Contact Us - Ghorer Bazar Support",
+      "metaTitle": "Contact Us - Babui Shop Support",
       "metaDescription": "Reach our customer care team via phone, WhatsApp, or email for quick assistance.",
       "updatedAt": "2026-09-20T05:30:56.717Z"
     },
@@ -1619,7 +1334,7 @@
       "slug": "faq",
       "content": "<h2>Common Questions</h2><h3>Is your honey 100% natural?</h3><p>Yes, absolutely. Our honey is neither heated nor pasteurized and contains zero artificial sugar syrup. It is tested for natural enzymes and pollen count.</p><h3>How fast is delivery?</h3><p>Inside Dhaka city, orders are delivered within 24 to 48 hours. Outside Dhaka, delivery takes 48 to 72 hours via partner courier services (Steadfast/Pathao/eCourier).</p><h3>Can I inspect the parcel before paying?</h3><p>Yes! We offer full Cash on Delivery with parcel inspection upon delivery.</p>",
       "isPublished": true,
-      "metaTitle": "FAQ - Ghorer Bazar",
+      "metaTitle": "FAQ - Babui Shop",
       "metaDescription": "Frequently asked questions about our products, delivery timelines, and return policy.",
       "updatedAt": "2026-09-20T05:30:56.717Z"
     },
@@ -1629,8 +1344,8 @@
       "slug": "privacy-policy",
       "content": "<h2>Privacy Policy</h2><p>We respect your privacy and never sell or share your personal contact details or order history with third parties. Your address and telephone number are strictly utilized for delivery fulfillment and order tracking.</p>",
       "isPublished": true,
-      "metaTitle": "Privacy Policy - Ghorer Bazar",
-      "metaDescription": "Read how Ghorer Bazar safeguards your personal data.",
+      "metaTitle": "Privacy Policy - Babui Shop",
+      "metaDescription": "Read how Babui Shop safeguards your personal data.",
       "updatedAt": "2026-09-20T05:30:56.717Z"
     },
     {
@@ -1639,7 +1354,7 @@
       "slug": "return-refund",
       "content": "<h2>7-Day Hassle-Free Returns</h2><p>If you receive a damaged jar or are unsatisfied with the purity or quality of any product, you can initiate a return or exchange within 7 days of delivery. Contact our hotline (+8809642922922) with your order number for an immediate replacement or full refund.</p>",
       "isPublished": true,
-      "metaTitle": "Return & Refund Policy - Ghorer Bazar",
+      "metaTitle": "Return & Refund Policy - Babui Shop",
       "metaDescription": "Understand our 7-day hassle-free replacement and refund guidelines.",
       "updatedAt": "2026-09-20T05:30:56.717Z"
     },
@@ -1649,7 +1364,7 @@
       "slug": "shipping-policy",
       "content": "<h2>Shipping Details</h2><p>Standard delivery inside Dhaka is ৳70. Outside Dhaka delivery is ৳130. Orders with a cart value of ৳1,500 or more enjoy free shipping nationwide.</p>",
       "isPublished": true,
-      "metaTitle": "Shipping Policy - Ghorer Bazar",
+      "metaTitle": "Shipping Policy - Babui Shop",
       "metaDescription": "Information on shipping fees, free delivery limits, and couriers.",
       "updatedAt": "2026-09-20T05:30:56.717Z"
     }
@@ -1723,7 +1438,7 @@
     {
       "id": 1,
       "name": "Super Administrator",
-      "email": "admin@ghorerbazar.com",
+      "email": "admin@babuishop.com",
       "password": "admin",
       "role": "super_admin",
       "permissions": [
@@ -1731,12 +1446,12 @@
       ],
       "isActive": true,
       "avatarUrl": "https://images.unsplash.com/photo-1534528741775-53994a69daeb?auto=format&fit=crop&w=120&q=80",
-      "lastLoginAt": "2026-09-24T16:03:46.496Z"
+      "lastLoginAt": "2026-09-24T19:16:33.601Z"
     },
     {
       "id": 2,
       "name": "Product Manager",
-      "email": "products@ghorerbazar.com",
+      "email": "products@babuishop.com",
       "password": "admin",
       "role": "product_manager",
       "permissions": [
@@ -1753,7 +1468,7 @@
     {
       "id": 3,
       "name": "Order & Logistics Lead",
-      "email": "orders@ghorerbazar.com",
+      "email": "orders@babuishop.com",
       "password": "admin",
       "role": "order_manager",
       "permissions": [
@@ -1768,6 +1483,105 @@
     }
   ],
   "activityLogs": [
+    {
+      "id": 70,
+      "adminName": "Super Administrator",
+      "action": "ADMIN_LOGIN",
+      "entityType": "auth",
+      "entityId": 1,
+      "details": "Admin Super Administrator logged into CMS.",
+      "createdAt": "2026-09-24T19:16:33.601Z"
+    },
+    {
+      "id": 69,
+      "adminName": "Admin",
+      "action": "COUPON_DELETED",
+      "entityType": "coupon",
+      "entityId": 2,
+      "details": "Deleted coupon ID 2",
+      "createdAt": "2026-09-24T19:14:12.002Z"
+    },
+    {
+      "id": 68,
+      "adminName": "Admin",
+      "action": "ORDER_DELETED",
+      "entityType": "order",
+      "entityId": "GB-2026-1001",
+      "details": "Order #GB-2026-1001 was deleted.",
+      "createdAt": "2026-09-24T19:12:47.661Z"
+    },
+    {
+      "id": 67,
+      "adminName": "Admin",
+      "action": "ORDER_DELETED",
+      "entityType": "order",
+      "entityId": "GB-2026-1002",
+      "details": "Order #GB-2026-1002 was deleted.",
+      "createdAt": "2026-09-24T19:12:39.629Z"
+    },
+    {
+      "id": 66,
+      "adminName": "Admin",
+      "action": "ORDER_DELETED",
+      "entityType": "order",
+      "entityId": "GB-2026-1003",
+      "details": "Order #GB-2026-1003 was deleted.",
+      "createdAt": "2026-09-24T19:12:37.845Z"
+    },
+    {
+      "id": 65,
+      "adminName": "Admin",
+      "action": "ORDER_DELETED",
+      "entityType": "order",
+      "entityId": "GB-2026-1004",
+      "details": "Order #GB-2026-1004 was deleted.",
+      "createdAt": "2026-09-24T19:12:35.744Z"
+    },
+    {
+      "id": 64,
+      "adminName": "Admin",
+      "action": "ORDER_DELETED",
+      "entityType": "order",
+      "entityId": "GB-2026-1005",
+      "details": "Order #GB-2026-1005 was deleted.",
+      "createdAt": "2026-09-24T19:12:33.482Z"
+    },
+    {
+      "id": 63,
+      "adminName": "Admin",
+      "action": "CUSTOMER_DELETED",
+      "entityType": "customer",
+      "entityId": 5,
+      "details": "Customer \"Guest Shopper\" was deleted.",
+      "createdAt": "2026-09-24T19:12:27.840Z"
+    },
+    {
+      "id": 62,
+      "adminName": "Admin",
+      "action": "CATEGORY_DELETED",
+      "entityType": "category",
+      "entityId": 1,
+      "details": "Deleted category ID 1",
+      "createdAt": "2026-09-24T19:11:09.702Z"
+    },
+    {
+      "id": 61,
+      "adminName": "Super Administrator",
+      "action": "ADMIN_LOGIN",
+      "entityType": "auth",
+      "entityId": 1,
+      "details": "Admin Super Administrator logged into CMS.",
+      "createdAt": "2026-09-24T19:11:05.388Z"
+    },
+    {
+      "id": 60,
+      "adminName": "Super Administrator",
+      "action": "ADMIN_LOGIN",
+      "entityType": "auth",
+      "entityId": 1,
+      "details": "Admin Super Administrator logged into CMS.",
+      "createdAt": "2026-09-24T18:53:39.409Z"
+    },
     {
       "id": 59,
       "adminName": "Admin",
@@ -2170,7 +1984,7 @@
       "action": "BRAND_UPDATED",
       "entityType": "brand",
       "entityId": 1,
-      "details": "Updated brand Ghorerbazar",
+      "details": "Updated brand Babui Shop",
       "createdAt": "2026-09-20T07:45:54.398Z"
     },
     {

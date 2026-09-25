@@ -54,19 +54,6 @@ export default function Navigation({ cartItemCount = 0 }: NavigationProps) {
     return () => document.removeEventListener('mousedown', handleClickOutside);
   }, []);
 
-  const featuredCategories = [
-    'Oil & Ghee',
-    'Honey',
-    'Dates',
-    'Spices',
-    'Nuts & Seeds',
-    'Beverage',
-    'Rice',
-    'Flours & Lentils',
-    'Organic',
-    'Functional Food',
-  ];
-
   const categoriesList = Array.isArray(categories) ? categories : [];
   const safeSearchResults = Array.isArray(searchResults) ? searchResults : [];
 
@@ -218,20 +205,19 @@ export default function Navigation({ cartItemCount = 0 }: NavigationProps) {
         className="gb-category-band sticky top-0 z-[1000] w-full bg-slate-100/95 dark:bg-slate-900/95 backdrop-blur-md border-b border-slate-200 dark:border-slate-800 shadow-xs transition-shadow"
       >
         <div className="container mx-auto px-4 flex items-center gap-1.5 sm:gap-2 overflow-x-auto scrollbar-none py-2.5">
-          {featuredCategories.map((cat) => {
-            const category = categoriesList.find((c) => c.name === cat);
-            const isActive = location === `/category/${category?.id}`;
+          {categoriesList.map((category) => {
+            const isActive = location === `/category/${category.id}`;
             return (
               <Link
-                key={cat}
-                href={`/category/${category?.id || 1}`}
+                key={category.id}
+                href={`/category/${category.id}`}
                 className={`px-3.5 py-1.5 rounded-full whitespace-nowrap text-sm md:text-[15px] font-medium tracking-normal transition-all shrink-0 ${
                   isActive
                     ? 'bg-emerald-600 text-white font-semibold shadow-xs'
                     : 'text-slate-700 dark:text-slate-200 hover:bg-white dark:hover:bg-slate-800 hover:text-emerald-700 dark:hover:text-emerald-400'
                 }`}
               >
-                {cat}
+                {category.name}
               </Link>
             );
           })}
@@ -312,19 +298,16 @@ export default function Navigation({ cartItemCount = 0 }: NavigationProps) {
               Product Categories
             </p>
             <div className="space-y-0.5">
-              {featuredCategories.map((cat) => {
-                const category = categoriesList.find((c) => c.name === cat);
-                return (
-                  <Link
-                    key={cat}
-                    href={`/category/${category?.id || 1}`}
-                    className="block px-3 py-2 rounded-lg text-xs font-medium text-slate-700 dark:text-slate-300 hover:bg-emerald-50 dark:hover:bg-slate-800/60 hover:text-emerald-700 transition-colors"
-                    onClick={() => setIsMobileMenuOpen(false)}
-                  >
-                    {cat}
-                  </Link>
-                );
-              })}
+              {categoriesList.map((category) => (
+                <Link
+                  key={category.id}
+                  href={`/category/${category.id}`}
+                  className="block px-3 py-2 rounded-lg text-xs font-medium text-slate-700 dark:text-slate-300 hover:bg-emerald-50 dark:hover:bg-slate-800/60 hover:text-emerald-700 transition-colors"
+                  onClick={() => setIsMobileMenuOpen(false)}
+                >
+                  {category.name}
+                </Link>
+              ))}
             </div>
           </div>
 

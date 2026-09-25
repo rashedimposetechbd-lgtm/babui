@@ -1,6 +1,6 @@
 import fs from "fs";
 import path from "path";
-import { loadStateFromMysql, triggerMysqlSync } from "./mysqlSync";
+import { loadStateFromMysql, triggerMysqlSync, deleteOrderFromMysql, deleteCustomerFromMysql } from "./mysqlSync";
 
 // Types for all manageable entities in the Admin CMS
 export interface SystemSettings {
@@ -365,24 +365,24 @@ const DATA_FILE_PATH = path.resolve(process.cwd(), "server", "data-store.json");
 const defaultData: CMSDataStore = {
   settings: {
     id: 1,
-    siteName: "Ghorer Bazar",
-    siteTitle: "Ghorer Bazar - Pure & Natural Grocery Bangladesh",
+    siteName: "Babui Shop",
+    siteTitle: "Babui Shop - Pure & Natural Grocery Bangladesh",
     metaDescription:
       "Buy 100% natural and pure honey, cold pressed mustard oil, traditional ghee, premium dates, and organic spices online in Bangladesh with home delivery.",
     siteLogo: "https://images.unsplash.com/photo-1542838132-92c53300491e?auto=format&fit=crop&w=240&q=80",
     darkLogo: "https://images.unsplash.com/photo-1542838132-92c53300491e?auto=format&fit=crop&w=240&q=80",
     siteFavicon: "https://images.unsplash.com/photo-1542838132-92c53300491e?auto=format&fit=crop&w=64&q=80",
-    siteEmail: "contact@ghorerbazar.com",
+    siteEmail: "contact@babuishop.com",
     sitePhone: "+8809642922922",
     siteWhatsApp: "+8801712345678",
     siteAddress: "House 12, Road 4, Rampura, Dhaka - 1219, Bangladesh",
     businessHours: "Saturday - Thursday: 9:00 AM - 9:00 PM",
     googleMapsUrl: "https://maps.google.com/?q=Rampura+Dhaka+Bangladesh",
-    facebookUrl: "https://facebook.com/ghorerbazarbd",
-    instagramUrl: "https://instagram.com/ghorerbazarbd",
-    youtubeUrl: "https://youtube.com/@ghorerbazar",
-    tiktokUrl: "https://tiktok.com/@ghorerbazar",
-    messengerUrl: "https://m.me/ghorerbazarbd",
+    facebookUrl: "https://facebook.com/babuishopbd",
+    instagramUrl: "https://instagram.com/babuishopbd",
+    youtubeUrl: "https://youtube.com/@babuishop",
+    tiktokUrl: "https://tiktok.com/@babuishop",
+    messengerUrl: "https://m.me/babuishopbd",
     shippingInsideDhaka: 70,
     shippingOutsideDhaka: 130,
     freeShippingThreshold: 1500,
@@ -567,11 +567,11 @@ const defaultData: CMSDataStore = {
   brands: [
     {
       id: 1,
-      name: "Ghorerbazar",
-      slug: "ghorerbazar",
+      name: "Babui Shop",
+      slug: "babuishop",
       logoUrl: "https://images.unsplash.com/photo-1542838132-92c53300491e?auto=format&fit=crop&w=160&q=80",
       description: "Flagship house brand delivering direct from farmers and beekeepers.",
-      websiteUrl: "https://ghorerbazar.com",
+      websiteUrl: "https://babuishop.com",
       sortOrder: 1,
       isActive: true,
     },
@@ -1090,7 +1090,7 @@ const defaultData: CMSDataStore = {
     },
     {
       id: 2,
-      code: "ghorerbazar100",
+      code: "babuishop100",
       discountType: "fixed",
       discountValue: 100,
       minOrderAmount: 1500,
@@ -1294,19 +1294,19 @@ const defaultData: CMSDataStore = {
       id: 1,
       title: "About Us",
       slug: "about-us",
-      content: `<h2>About Ghorer Bazar</h2><p>Ghorer Bazar started with a humble vision: to deliver 100% natural, adulteration-free, and chemical-free pantry staples directly to health-conscious families across Bangladesh.</p><p>We collect raw honey directly from trusted beekeepers and wild honey collectors (mouwals) in the Sundarbans. Our cold-pressed mustard oil is produced using authentic low-temperature wood ghani pressing, retaining every drop of essential nutrients and unadulterated aroma.</p><p>Today, more than 10,000 households trust Ghorer Bazar as their primary supplier for natural health foods, Madinah dates, ghee, and pure spices.</p>`,
+      content: `<h2>About Babui Shop</h2><p>Babui Shop started with a humble vision: to deliver 100% natural, adulteration-free, and chemical-free pantry staples directly to health-conscious families across Bangladesh.</p><p>We collect raw honey directly from trusted beekeepers and wild honey collectors (mouwals) in the Sundarbans. Our cold-pressed mustard oil is produced using authentic low-temperature wood ghani pressing, retaining every drop of essential nutrients and unadulterated aroma.</p><p>Today, more than 10,000 households trust Babui Shop as their primary supplier for natural health foods, Madinah dates, ghee, and pure spices.</p>`,
       isPublished: true,
-      metaTitle: "About Us - Ghorer Bazar Bangladesh",
-      metaDescription: "Learn about Ghorer Bazar's mission to bring authentic, farm-fresh natural foods to your dining table.",
+      metaTitle: "About Us - Babui Shop Bangladesh",
+      metaDescription: "Learn about Babui Shop's mission to bring authentic, farm-fresh natural foods to your dining table.",
       updatedAt: new Date().toISOString(),
     },
     {
       id: 2,
       title: "Contact Us",
       slug: "contact-us",
-      content: `<h2>Customer Support & Location</h2><p>Have questions about an order or our natural products? Our dedicated customer care team is available Saturday through Thursday from 9:00 AM to 9:00 PM.</p><p><strong>Hotline:</strong> +8809642922922<br/><strong>WhatsApp:</strong> +8801712345678<br/><strong>Email:</strong> contact@ghorerbazar.com<br/><strong>Warehouse & Office:</strong> House 12, Road 4, Rampura, Dhaka - 1219, Bangladesh.</p>`,
+      content: `<h2>Customer Support & Location</h2><p>Have questions about an order or our natural products? Our dedicated customer care team is available Saturday through Thursday from 9:00 AM to 9:00 PM.</p><p><strong>Hotline:</strong> +8809642922922<br/><strong>WhatsApp:</strong> +8801712345678<br/><strong>Email:</strong> contact@babuishop.com<br/><strong>Warehouse & Office:</strong> House 12, Road 4, Rampura, Dhaka - 1219, Bangladesh.</p>`,
       isPublished: true,
-      metaTitle: "Contact Us - Ghorer Bazar Support",
+      metaTitle: "Contact Us - Babui Shop Support",
       metaDescription: "Reach our customer care team via phone, WhatsApp, or email for quick assistance.",
       updatedAt: new Date().toISOString(),
     },
@@ -1316,7 +1316,7 @@ const defaultData: CMSDataStore = {
       slug: "faq",
       content: `<h2>Common Questions</h2><h3>Is your honey 100% natural?</h3><p>Yes, absolutely. Our honey is neither heated nor pasteurized and contains zero artificial sugar syrup. It is tested for natural enzymes and pollen count.</p><h3>How fast is delivery?</h3><p>Inside Dhaka city, orders are delivered within 24 to 48 hours. Outside Dhaka, delivery takes 48 to 72 hours via partner courier services (Steadfast/Pathao/eCourier).</p><h3>Can I inspect the parcel before paying?</h3><p>Yes! We offer full Cash on Delivery with parcel inspection upon delivery.</p>`,
       isPublished: true,
-      metaTitle: "FAQ - Ghorer Bazar",
+      metaTitle: "FAQ - Babui Shop",
       metaDescription: "Frequently asked questions about our products, delivery timelines, and return policy.",
       updatedAt: new Date().toISOString(),
     },
@@ -1326,8 +1326,8 @@ const defaultData: CMSDataStore = {
       slug: "privacy-policy",
       content: `<h2>Privacy Policy</h2><p>We respect your privacy and never sell or share your personal contact details or order history with third parties. Your address and telephone number are strictly utilized for delivery fulfillment and order tracking.</p>`,
       isPublished: true,
-      metaTitle: "Privacy Policy - Ghorer Bazar",
-      metaDescription: "Read how Ghorer Bazar safeguards your personal data.",
+      metaTitle: "Privacy Policy - Babui Shop",
+      metaDescription: "Read how Babui Shop safeguards your personal data.",
       updatedAt: new Date().toISOString(),
     },
     {
@@ -1336,7 +1336,7 @@ const defaultData: CMSDataStore = {
       slug: "return-refund",
       content: `<h2>7-Day Hassle-Free Returns</h2><p>If you receive a damaged jar or are unsatisfied with the purity or quality of any product, you can initiate a return or exchange within 7 days of delivery. Contact our hotline (+8809642922922) with your order number for an immediate replacement or full refund.</p>`,
       isPublished: true,
-      metaTitle: "Return & Refund Policy - Ghorer Bazar",
+      metaTitle: "Return & Refund Policy - Babui Shop",
       metaDescription: "Understand our 7-day hassle-free replacement and refund guidelines.",
       updatedAt: new Date().toISOString(),
     },
@@ -1346,7 +1346,7 @@ const defaultData: CMSDataStore = {
       slug: "shipping-policy",
       content: `<h2>Shipping Details</h2><p>Standard delivery inside Dhaka is ৳70. Outside Dhaka delivery is ৳130. Orders with a cart value of ৳1,500 or more enjoy free shipping nationwide.</p>`,
       isPublished: true,
-      metaTitle: "Shipping Policy - Ghorer Bazar",
+      metaTitle: "Shipping Policy - Babui Shop",
       metaDescription: "Information on shipping fees, free delivery limits, and couriers.",
       updatedAt: new Date().toISOString(),
     },
@@ -1402,7 +1402,7 @@ const defaultData: CMSDataStore = {
     {
       id: 1,
       name: "Super Administrator",
-      email: "admin@ghorerbazar.com",
+      email: "admin@babuishop.com",
       password: "admin",
       role: "super_admin",
       permissions: ["all"],
@@ -1413,7 +1413,7 @@ const defaultData: CMSDataStore = {
     {
       id: 2,
       name: "Product Manager",
-      email: "products@ghorerbazar.com",
+      email: "products@babuishop.com",
       password: "admin",
       role: "product_manager",
       permissions: ["dashboard", "products", "categories", "brands", "media"],
@@ -1424,7 +1424,7 @@ const defaultData: CMSDataStore = {
     {
       id: 3,
       name: "Order & Logistics Lead",
-      email: "orders@ghorerbazar.com",
+      email: "orders@babuishop.com",
       password: "admin",
       role: "order_manager",
       permissions: ["dashboard", "orders", "customers", "shipping"],
@@ -1978,6 +1978,30 @@ class DataStoreManager {
     return order;
   }
 
+  updateOrder(orderId: number, data: Partial<OrderRecord>): OrderRecord | undefined {
+    const order = this.data.orders.find((o) => o.id === orderId);
+    if (!order) return undefined;
+    Object.assign(order, data);
+    order.updatedAt = new Date().toISOString();
+
+    this.logActivity("Admin", "ORDER_UPDATED", "order", order.orderNumber, `Order ${order.orderNumber} details updated.`);
+    this.persist();
+    return order;
+  }
+
+  deleteOrder(orderId: number): boolean {
+    const prevLen = this.data.orders.length;
+    const target = this.data.orders.find((o) => o.id === orderId);
+    this.data.orders = this.data.orders.filter((o) => o.id !== orderId);
+    if (this.data.orders.length < prevLen) {
+      this.logActivity("Admin", "ORDER_DELETED", "order", target?.orderNumber || orderId, `Order #${target?.orderNumber || orderId} was deleted.`);
+      this.persist();
+      deleteOrderFromMysql(orderId).catch(() => {});
+      return true;
+    }
+    return false;
+  }
+
   createOrder(orderInput: Omit<OrderRecord, "id" | "orderNumber" | "createdAt" | "updatedAt">): OrderRecord {
     const newId = Math.max(1000, ...this.data.orders.map((o) => o.id)) + 1;
     const now = new Date().toISOString();
@@ -2037,6 +2061,19 @@ class DataStoreManager {
     this.logActivity("Admin", "CUSTOMER_UPDATED", "customer", id, `Updated customer ${cust.name}`);
     this.persist();
     return cust;
+  }
+
+  deleteCustomer(id: number): boolean {
+    const prevLen = this.data.customers.length;
+    const target = this.data.customers.find((c) => c.id === id);
+    this.data.customers = this.data.customers.filter((c) => c.id !== id);
+    if (this.data.customers.length < prevLen) {
+      this.logActivity("Admin", "CUSTOMER_DELETED", "customer", id, `Customer "${target?.name || id}" was deleted.`);
+      this.persist();
+      deleteCustomerFromMysql(id).catch(() => {});
+      return true;
+    }
+    return false;
   }
 
   // Shipping & Payment
@@ -2144,7 +2181,15 @@ class DataStoreManager {
   }
 
   authenticateAdmin(email: string, pass: string): AdminUser | null {
-    const user = this.data.adminUsers.find((u) => u.email.toLowerCase() === email.toLowerCase());
+    const cleanEmail = email.trim().toLowerCase();
+    const user = this.data.adminUsers.find((u) => {
+      const uEmail = u.email.toLowerCase();
+      return (
+        uEmail === cleanEmail ||
+        (cleanEmail === "admin@ghorerbazar.com" && uEmail === "admin@babuishop.com") ||
+        (cleanEmail === "admin@babuishop.com" && uEmail === "admin@ghorerbazar.com")
+      );
+    });
     if (!user) return null;
     if (user.password && user.password !== pass && pass !== "admin123456" && pass !== "admin") {
       return null;
@@ -2259,18 +2304,29 @@ class DataStoreManager {
     const products = this.data.products;
     const customers = this.data.customers;
 
+    // Helper to safely convert any Date object, timestamp, or string into an ISO date string
+    const toSafeDateStr = (val: any): string => {
+      if (!val) return "";
+      if (val instanceof Date) return val.toISOString();
+      const str = String(val);
+      if (str.includes(" ") && !str.includes("T")) {
+        return str.replace(" ", "T");
+      }
+      return str;
+    };
+
     const totalSales = orders.reduce((sum, o) => (o.paymentStatus === "paid" ? sum + o.total : sum), 0);
     
     // Today's sales
     const todayStr = new Date().toISOString().split("T")[0];
     const todaySales = orders
-      .filter((o) => o.createdAt.startsWith(todayStr))
+      .filter((o) => toSafeDateStr(o.createdAt).startsWith(todayStr))
       .reduce((sum, o) => sum + o.total, 0);
 
     // Monthly sales (current month)
     const currentMonthPrefix = todayStr.substring(0, 7);
     const monthlySales = orders
-      .filter((o) => o.createdAt.startsWith(currentMonthPrefix))
+      .filter((o) => toSafeDateStr(o.createdAt).startsWith(currentMonthPrefix))
       .reduce((sum, o) => sum + o.total, 0);
 
     const pendingOrders = orders.filter((o) => o.orderStatus === "pending").length;
@@ -2289,7 +2345,7 @@ class DataStoreManager {
       const d = new Date(Date.now() - i * 86400000);
       const dateStr = d.toISOString().split("T")[0];
       const dayLabel = d.toLocaleDateString("en-US", { weekday: "short", month: "numeric", day: "numeric" });
-      const dayOrders = orders.filter((o) => o.createdAt.startsWith(dateStr));
+      const dayOrders = orders.filter((o) => toSafeDateStr(o.createdAt).startsWith(dateStr));
       const daySales = dayOrders.reduce((acc, o) => acc + o.total, 0);
       dailySalesData.push({
         date: dayLabel,
@@ -2306,7 +2362,7 @@ class DataStoreManager {
       const d = new Date(now.getFullYear(), now.getMonth() - m, 1);
       const monthLabel = monthNames[d.getMonth()];
       const prefix = d.toISOString().substring(0, 7);
-      const mOrders = orders.filter((o) => o.createdAt.startsWith(prefix));
+      const mOrders = orders.filter((o) => toSafeDateStr(o.createdAt).startsWith(prefix));
       const rev = mOrders.reduce((sum, o) => sum + o.total, 0);
       monthlyRevenueData.push({
         month: monthLabel,

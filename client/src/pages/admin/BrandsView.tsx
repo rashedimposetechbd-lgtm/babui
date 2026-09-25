@@ -35,6 +35,7 @@ export default function BrandsView() {
 
   const { data: brands = [], refetch, isLoading } = trpc.admin.brands.list.useQuery();
   const { data: products = [] } = trpc.admin.products.list.useQuery();
+  const utils = trpc.useUtils();
 
   const saveMutation = trpc.admin.brands.save.useMutation();
   const deleteMutation = trpc.admin.brands.delete.useMutation();
@@ -94,6 +95,10 @@ export default function BrandsView() {
       toast.success(editingId ? "Brand updated successfully!" : "Brand created successfully!");
       setIsModalOpen(false);
       refetch();
+      utils.brands.invalidate();
+      utils.admin.brands.invalidate();
+      utils.products.invalidate();
+      utils.admin.products.invalidate();
     } catch (err: any) {
       toast.error(err.message || "Failed to save brand");
     }
@@ -119,6 +124,10 @@ export default function BrandsView() {
       await deleteMutation.mutateAsync({ id });
       toast.success("Brand deleted successfully!");
       refetch();
+      utils.brands.invalidate();
+      utils.admin.brands.invalidate();
+      utils.products.invalidate();
+      utils.admin.products.invalidate();
     } catch (err: any) {
       toast.error("Failed to delete brand");
     }
